@@ -48,4 +48,11 @@ O projeto foi construído sob quatro pilares principais:
 
 ---
 
-Este projeto faz parte de um Trabalho de Conclusão de Curso (TCC) focado em impacto social e excelência técnica.
+Resumo da Estrutura Atual:
+/src: Componentes, páginas e lógica do frontend.
+/public: Ativos estáticos (ícones, imagens).
+package.json: Dependências do projeto.
+MASTER_PROMPT.md: Documentação técnica do core do DoaHub.
+README.md: Guia principal do seu projeto de TCC.
+
+Esse projeto faz parte de um Trabalho de Conclusão de Curso (TCC) focado em impacto social e excelência técnica.
