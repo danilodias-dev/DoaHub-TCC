@@ -11,7 +11,6 @@ import {
   ShieldCheck, 
   Smartphone,
   Save,
-  Check
 } from 'lucide-react';
 import { useCampaigns } from '../../context/CampaignContext';
 

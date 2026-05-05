@@ -11,7 +11,6 @@ import {
   Users,
   Tag,
   AlertTriangle,
-  ChevronDown,
 } from 'lucide-react';
 import { PremiumButton } from '../ui/PremiumButton';
 import { useCampaigns } from '../../context/CampaignContext';

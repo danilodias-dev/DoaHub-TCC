@@ -36,7 +36,7 @@ ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('p
   const url = URL.createObjectURL(blob);
 
   // Formata o nome do arquivo
-  const fileName = `Recibo_Doacao_${donation.name.replace(/\\s+/g, '_')}_${new Date().getTime()}.txt`;
+  const fileName = `Recibo_Doacao_${donation.name.replace(/\s+/g, '_')}_${new Date().getTime()}.txt`;
 
   // Cria um elemento <a> invisível para forçar o download
   const link = document.createElement('a');

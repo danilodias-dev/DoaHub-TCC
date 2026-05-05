@@ -11,7 +11,6 @@ import {
   ImagePlus,
   AlertTriangle,
   Sparkles,
-  Check,
 } from 'lucide-react';
 import { PremiumButton } from './PremiumButton';
 

@@ -22,7 +22,6 @@ export function OnboardingStep2() {
   const [errors, setErrors] = useState({ estatuto: null, ata: null, comprovante: null });
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
-  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   // Refs for hidden file inputs
   const inputRefs = {
@@ -76,7 +75,6 @@ export function OnboardingStep2() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSubmitAttempted(true);
 
     // Primary blocking criterion: terms must be accepted
     if (!termsAccepted) {
