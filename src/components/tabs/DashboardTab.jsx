@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Megaphone,
   ArrowUpRight,
   MoreVertical,
   Clock,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { useCampaigns } from '../../context/CampaignContext';
 import { ActivityFeedModal } from '../ui/ActivityFeedModal';
@@ -33,6 +36,96 @@ const fadeUp = {
 export function DashboardTab() {
   const { campaigns, stats, activityFeed } = useCampaigns();
   const [isFeedOpen, setIsFeedOpen] = useState(false);
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [dismissedTips, setDismissedTips] = useState([]);
+  const [manualNavTrigger, setManualNavTrigger] = useState(0);
+
+  // 1. Dicas Ativas (Prioridade Alta)
+  const activeTips = useMemo(() => {
+    const tips = [];
+    
+    // Alerta de Termos de Uso (exemplo de ação pendente)
+    if (!dismissedTips.includes('terms')) {
+      tips.push({
+        id: 'terms',
+        type: 'active',
+        title: 'Ação Necessária ⚠️',
+        text: 'Você ainda não aceitou os Termos de Uso atualizados da plataforma.',
+        buttonText: 'Revisar Termos',
+        color: 'bg-emerald shadow-emerald/20',
+        icon: AlertTriangle,
+        action: () => setDismissedTips(prev => [...prev, 'terms'])
+      });
+    }
+
+    // Alerta de campanhas quase atingindo a meta
+    campaigns.forEach(c => {
+      const perc = c.goal > 0 ? c.raised / c.goal : 0;
+      const tipId = `camp_${c.id}_90`;
+      if (c.status === 'Ativa' && perc >= 0.9 && perc < 1 && !dismissedTips.includes(tipId)) {
+        tips.push({
+          id: tipId,
+          type: 'active',
+          title: 'Quase lá! 🎯',
+          text: `Sua campanha "${c.title}" está em ${Math.round(perc * 100)}%. Que tal um post de agradecimento?`,
+          buttonText: 'Criar Postagem',
+          color: 'bg-emerald shadow-emerald/20',
+          icon: Megaphone,
+          action: () => setDismissedTips(prev => [...prev, tipId])
+        });
+      }
+    });
+
+    return tips;
+  }, [campaigns, dismissedTips]);
+
+  // 2. Dicas Passivas (Dados de Mercado)
+  const passiveTips = useMemo(() => [
+    {
+      id: 'p1',
+      type: 'passive',
+      title: 'Dica de Impacto 💡',
+      text: 'Campanhas com fotos reais do impacto aumentam a doação média em 45%.',
+      buttonText: 'Atualizar fotos',
+      color: 'bg-emerald shadow-emerald/20',
+      icon: Lightbulb,
+      action: () => {}
+    },
+    {
+      id: 'p2',
+      type: 'passive',
+      title: 'Você sabia? 📊',
+      text: 'Doadores recorrentes são 3x mais propensos a indicar novos membros.',
+      buttonText: 'Ver relatórios',
+      color: 'bg-emerald shadow-emerald/20',
+      icon: Clock, // Mantendo icon de relogio solicitado
+      action: () => {}
+    }
+  ], []);
+
+  // Combina as listas para o ciclo de rotação (Ativas primeiro, depois Passivas)
+  const allTips = [...activeTips, ...passiveTips];
+  const safeIndex = currentTipIndex % Math.max(1, allTips.length);
+  const currentTip = allTips[safeIndex];
+
+  // Rotação automática das dicas a cada 8 segundos
+  useEffect(() => {
+    if (allTips.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentTipIndex((prev) => (prev + 1) % allTips.length);
+    }, 8000);
+    return () => clearInterval(timer);
+  }, [allTips.length, manualNavTrigger]);
+
+  const nextTip = () => {
+    setCurrentTipIndex((prev) => (prev + 1) % allTips.length);
+    setManualNavTrigger((prev) => prev + 1);
+  };
+
+  const prevTip = () => {
+    setCurrentTipIndex((prev) => (prev - 1 + allTips.length) % allTips.length);
+    setManualNavTrigger((prev) => prev + 1);
+  };
 
   return (
     <>
@@ -245,21 +338,61 @@ export function DashboardTab() {
             </button>
           </div>
 
-          {/* Card Dica de Impacto */}
-          <div className="bg-emerald rounded-[2rem] p-8 text-white relative overflow-hidden shadow-xl shadow-emerald/20">
-            <div className="absolute top-0 right-0 p-4 opacity-20">
-              <Clock className="w-20 h-20 rotate-12" />
-            </div>
-            <div className="relative z-10">
-              <h4 className="font-display font-bold text-xl mb-2">Dica de Impacto 💡</h4>
-              <p className="text-white/80 text-sm font-medium leading-relaxed mb-4">
-                Campanhas com fotos reais do impacto aumentam a doação média em{' '}
-                <span className="text-white font-bold">45%</span>.
-              </p>
-              <button className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-bold transition-all underline decoration-white/30">
-                Atualizar fotos
-              </button>
-            </div>
+          {/* Card Dica Inteligente */}
+          <div className="relative bg-emerald rounded-[2rem] p-8 pb-12 text-white shadow-xl shadow-emerald/20 min-h-[200px] flex flex-col justify-center overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentTip.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="relative z-10 w-full"
+              >
+                <div className="absolute top-0 right-0 opacity-20 -mr-4 -mt-4 pointer-events-none">
+                  <currentTip.icon className="w-24 h-24 rotate-12" />
+                </div>
+                <div className="pr-4">
+                  <h4 className="font-display font-bold text-xl mb-2">{currentTip.title}</h4>
+                  <p className="text-white/90 text-sm font-medium leading-relaxed mb-4 min-h-[40px]">
+                    {currentTip.text}
+                  </p>
+                  <button 
+                    onClick={currentTip.action}
+                    className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-bold transition-all underline decoration-white/30 self-start inline-block"
+                  >
+                    {currentTip.buttonText}
+                  </button>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Navegação Manual */}
+            {allTips.length > 1 && (
+              <div className="absolute bottom-4 left-0 right-0 flex items-center justify-center gap-4 z-20">
+                <button onClick={prevTip} className="w-7 h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors" aria-label="Dica anterior">
+                  <ChevronLeft className="w-4 h-4 -ml-0.5" />
+                </button>
+                <div className="flex gap-1.5 items-center">
+                  {allTips.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setCurrentTipIndex(idx);
+                        setManualNavTrigger(prev => prev + 1);
+                      }}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        idx === safeIndex ? 'bg-white w-4' : 'bg-white/40 hover:bg-white/60 w-1.5'
+                      }`}
+                      aria-label={`Ir para a dica ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+                <button onClick={nextTip} className="w-7 h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors" aria-label="Próxima dica">
+                  <ChevronRight className="w-4 h-4 ml-0.5" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

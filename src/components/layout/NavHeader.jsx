@@ -82,12 +82,12 @@ export function NavHeader() {
               className="absolute right-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl p-6 flex flex-col gap-2"
             >
               <div className="flex justify-between items-center mb-8">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-emerald text-white flex items-center justify-center">
+                <Link to="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2 group">
+                  <div className="w-8 h-8 rounded-lg bg-emerald text-white flex items-center justify-center group-hover:scale-105 transition-transform">
                     <Heart className="w-5 h-5" />
                   </div>
                   <span className="font-display font-bold text-lg text-graphite-dark">DoaHub</span>
-                </div>
+                </Link>
                 <button onClick={() => setIsOpen(false)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-ice text-graphite-dark transition-colors">
                   <X className="w-6 h-6" />
                 </button>

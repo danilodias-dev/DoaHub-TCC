@@ -58,10 +58,10 @@ export function DashboardONG() {
       
       {/* Sidebar Navigation */}
       <aside className="w-64 bg-white border-r border-graphite/5 flex flex-col sticky top-0 h-screen hidden lg:flex">
-        <div className="p-8 flex items-center gap-3">
+        <Link to="/" className="p-8 flex items-center gap-3 hover:opacity-80 transition-opacity">
            <div className="w-8 h-8 rounded-lg bg-emerald text-white flex items-center justify-center font-bold">D</div>
            <span className="font-display font-bold text-xl text-graphite-dark tracking-tight">Doa<span className="text-emerald">Hub</span></span>
-        </div>
+        </Link>
         
         <nav className="flex-1 px-4 flex flex-col gap-1 mt-4">
            {[
