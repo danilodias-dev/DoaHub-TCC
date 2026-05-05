@@ -8,6 +8,8 @@ import {
   CheckCircle,
   ChevronLeft,
   ChevronRight,
+  AlertTriangle,
+  Lightbulb,
 } from 'lucide-react';
 import { useCampaigns } from '../../context/CampaignContext';
 import { ActivityFeedModal } from '../ui/ActivityFeedModal';
@@ -105,8 +107,8 @@ export function DashboardTab() {
 
   // Combina as listas para o ciclo de rotação (Ativas primeiro, depois Passivas)
   const allTips = [...activeTips, ...passiveTips];
-  const safeIndex = currentTipIndex % Math.max(1, allTips.length);
-  const currentTip = allTips[safeIndex];
+  const safeIndex = allTips.length > 0 ? currentTipIndex % allTips.length : 0;
+  const currentTip = allTips.length > 0 ? allTips[safeIndex] : null;
 
   // Rotação automática das dicas a cada 8 segundos
   useEffect(() => {
@@ -341,30 +343,32 @@ export function DashboardTab() {
           {/* Card Dica Inteligente */}
           <div className="relative bg-emerald rounded-[2rem] p-8 pb-12 text-white shadow-xl shadow-emerald/20 min-h-[200px] flex flex-col justify-center overflow-hidden">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={currentTip.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="relative z-10 w-full"
-              >
-                <div className="absolute top-0 right-0 opacity-20 -mr-4 -mt-4 pointer-events-none">
-                  <currentTip.icon className="w-24 h-24 rotate-12" />
-                </div>
-                <div className="pr-4">
-                  <h4 className="font-display font-bold text-xl mb-2">{currentTip.title}</h4>
-                  <p className="text-white/90 text-sm font-medium leading-relaxed mb-4 min-h-[40px]">
-                    {currentTip.text}
-                  </p>
-                  <button 
-                    onClick={currentTip.action}
-                    className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-bold transition-all underline decoration-white/30 self-start inline-block"
-                  >
-                    {currentTip.buttonText}
-                  </button>
-                </div>
-              </motion.div>
+              {currentTip && (
+                <motion.div
+                  key={currentTip.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="relative z-10 w-full"
+                >
+                  <div className="absolute top-0 right-0 opacity-20 -mr-4 -mt-4 pointer-events-none">
+                    <currentTip.icon className="w-24 h-24 rotate-12" />
+                  </div>
+                  <div className="pr-4">
+                    <h4 className="font-display font-bold text-xl mb-2">{currentTip.title}</h4>
+                    <p className="text-white/90 text-sm font-medium leading-relaxed mb-4 min-h-[40px]">
+                      {currentTip.text}
+                    </p>
+                    <button 
+                      onClick={currentTip.action}
+                      className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-bold transition-all underline decoration-white/30 self-start inline-block"
+                    >
+                      {currentTip.buttonText}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
             </AnimatePresence>
 
             {/* Navegação Manual */}
@@ -406,3 +410,4 @@ export function DashboardTab() {
     </>
   );
 }
+
