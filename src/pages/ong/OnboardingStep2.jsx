@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Upload, CheckCircle2, ChevronLeft, Shield, ArrowRight, File, XCircle, AlertTriangle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PremiumButton } from '../../components/ui/PremiumButton';
+import { useCampaigns } from '../../context/CampaignContext';
 
 const ACCEPTED_TYPES = [
   'application/pdf',
@@ -16,6 +17,7 @@ const MAX_FILE_SIZE_MB = 10;
 
 export function OnboardingStep2() {
   const navigate = useNavigate();
+  const { updateOrgProfile } = useCampaigns();
   const [files, setFiles] = useState({ estatuto: null, ata: null, comprovante: null });
   const [errors, setErrors] = useState({ estatuto: null, ata: null, comprovante: null });
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -90,6 +92,7 @@ export function OnboardingStep2() {
     }
 
     // All validations passed — proceed
+    updateOrgProfile({ isVerified: true });
     navigate('/ong/onboarding/sucesso');
   };
 

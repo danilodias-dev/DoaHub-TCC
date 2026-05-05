@@ -1,8 +1,10 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Activity, Filter } from 'lucide-react';
+import { X, Activity, Filter, Download } from 'lucide-react';
 import { useState } from 'react';
+import { useCampaigns } from '../../context/CampaignContext';
+import { downloadDonationReceipt } from '../../utils/receiptGenerator';
 
 /**
  * ============================================
@@ -34,6 +36,7 @@ const TYPE_COLORS = {
 };
 
 export function ActivityFeedModal({ isOpen, onClose, activityFeed }) {
+  const { orgProfile } = useCampaigns();
   const [filter, setFilter] = useState('all');
   const modalRef = useRef(null);
 
@@ -172,15 +175,28 @@ export function ActivityFeedModal({ isOpen, onClose, activityFeed }) {
                       </div>
 
                       {/* Valor + Hora */}
-                      <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
-                        {a.amount && (
-                          <span className="text-sm font-bold text-emerald">
-                            {a.amount}
+                      <div className="flex items-center gap-4 flex-shrink-0">
+                        <div className="flex flex-col items-end gap-0.5">
+                          {a.amount && (
+                            <span className="text-sm font-bold text-emerald">
+                              {a.amount}
+                            </span>
+                          )}
+                          <span className="text-[10px] text-graphite-light/60 font-medium">
+                            {a.time}
                           </span>
+                        </div>
+                        
+                        {a.type === 'donation' && (
+                          <button
+                            onClick={() => downloadDonationReceipt(a, orgProfile)}
+                            className="w-8 h-8 rounded-lg bg-ice hover:bg-emerald/10 flex items-center justify-center text-graphite-light hover:text-emerald transition-colors"
+                            title="Baixar Recibo"
+                            aria-label="Baixar Recibo"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                          </button>
                         )}
-                        <span className="text-[10px] text-graphite-light/60 font-medium">
-                          {a.time}
-                        </span>
                       </div>
                     </motion.div>
                   ))}

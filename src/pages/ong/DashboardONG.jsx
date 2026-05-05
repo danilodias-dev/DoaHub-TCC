@@ -9,6 +9,7 @@ import {
   Plus, 
   Search, 
   Bell,
+  ShieldCheck,
 } from 'lucide-react';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { NewCampaignModal } from '../../components/ui/NewCampaignModal';
@@ -22,7 +23,19 @@ import { useCampaigns } from '../../context/CampaignContext';
 export function DashboardONG() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { notification, addCampaign, dismissNotification } = useCampaigns();
+  const { notification, addCampaign, dismissNotification, orgProfile, showNotification } = useCampaigns();
+
+  const handleOpenNewCampaign = () => {
+    if (!orgProfile.isVerified) {
+      showNotification(
+        'error',
+        'Acesso Negado',
+        'Sua ONG precisa estar verificada para publicar novas campanhas. Conclua o envio da documentação.'
+      );
+      return;
+    }
+    setIsModalOpen(true);
+  };
 
   const pageVariants = {
     initial: { opacity: 0, scale: 0.99 },
@@ -36,7 +49,7 @@ export function DashboardONG() {
       case 'dashboard':
         return <DashboardTab />;
       case 'campanhas':
-        return <CampaignsTab onOpenModal={() => setIsModalOpen(true)} />;
+        return <CampaignsTab onOpenModal={handleOpenNewCampaign} />;
       case 'relatorios':
         return <ReportsTab />;
       case 'config':
@@ -84,7 +97,10 @@ export function DashboardONG() {
            <div className="bg-ice rounded-2xl p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-emerald/20 flex items-center justify-center font-bold text-emerald">IE</div>
               <div className="flex flex-col">
-                 <span className="text-sm font-bold text-graphite-dark">Inst. Esperança</span>
+                 <div className="flex items-center gap-1">
+                   <span className="text-sm font-bold text-graphite-dark truncate max-w-[120px]">{orgProfile.name}</span>
+                   {orgProfile.isVerified && <ShieldCheck className="w-3.5 h-3.5 text-emerald" title="ONG Verificada" />}
+                 </div>
                  <span className="text-xs text-graphite-light font-medium">Ver Perfil Público</span>
               </div>
            </div>
@@ -110,7 +126,7 @@ export function DashboardONG() {
                   <Bell className="w-5 h-5" />
                   <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                </button>
-               <PremiumButton size="sm" className="hidden md:flex gap-2" onClick={() => setIsModalOpen(true)}>
+               <PremiumButton size="sm" className="hidden md:flex gap-2" onClick={handleOpenNewCampaign}>
                   <Plus className="w-4 h-4" /> Nova Campanha
                </PremiumButton>
             </div>

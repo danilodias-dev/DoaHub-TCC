@@ -40,6 +40,8 @@ const INITIAL_ORG_PROFILE = {
   cnpj: '12.345.678/0001-90',
   address: 'Rua da Esperança, 123 — Recife, PE',
   avatar: null,
+  isVerified: false,
+  globalGoal: 150000,
   notifications: {
     emailDoacoes: true,
     emailRelatorios: true,
@@ -118,6 +120,11 @@ export function CampaignProvider({ children }) {
     return newCampaign;
   }, []);
 
+  const showNotification = useCallback((type, title, message) => {
+    setNotification({ type, title, message });
+    setTimeout(() => setNotification(null), 5000);
+  }, []);
+
   const dismissNotification = useCallback(() => {
     setNotification(null);
   }, []);
@@ -188,37 +195,52 @@ export function CampaignProvider({ children }) {
       .filter(c => !INITIAL_CAMPAIGNS.find(ic => ic.id === c.id))
       .reduce((sum, c) => sum + c.donors, 0);
 
-    return [
-      {
-        title: 'Total Arrecadado',
-        value: `R$ ${totalRaised.toLocaleString('pt-BR')}`,
-        trend: '+12%',
-        icon: DollarSign,
-        color: 'emerald',
-      },
-      {
-        title: 'Campanhas Ativas',
-        value: String(activeCampaigns.length),
-        trend: newCampaignsCount > 0 ? `${newCampaignsCount} nova${newCampaignsCount > 1 ? 's' : ''}` : '2 novas',
-        icon: Megaphone,
-        color: 'blue',
-      },
-      {
-        title: 'Doadores Ativos',
-        value: totalDonors.toLocaleString('pt-BR'),
-        trend: '+5%',
-        icon: Users,
-        color: 'purple',
-      },
-      {
-        title: 'Impacto Estimado',
-        value: '4.5k',
-        trend: 'Vidas',
-        icon: TrendingUp,
-        color: 'orange',
-      },
-    ];
-  }, [campaigns]);
+    const goal = orgProfile.globalGoal || 150000;
+    const progress = Math.min(Math.round((totalRaised / goal) * 100), 100);
+    
+    let impactLevel = 'Iniciante';
+    if (progress >= 100) impactLevel = 'Embaixador';
+    else if (progress >= 75) impactLevel = 'Ouro';
+    else if (progress >= 50) impactLevel = 'Prata';
+    else if (progress >= 25) impactLevel = 'Bronze';
+
+    return {
+      cards: [
+        {
+          title: 'Total Arrecadado',
+          value: `R$ ${totalRaised.toLocaleString('pt-BR')}`,
+          trend: '+12%',
+          icon: DollarSign,
+          color: 'emerald',
+        },
+        {
+          title: 'Campanhas Ativas',
+          value: String(activeCampaigns.length),
+          trend: newCampaignsCount > 0 ? `${newCampaignsCount} nova${newCampaignsCount > 1 ? 's' : ''}` : '2 novas',
+          icon: Megaphone,
+          color: 'blue',
+        },
+        {
+          title: 'Doadores Ativos',
+          value: totalDonors.toLocaleString('pt-BR'),
+          trend: '+5%',
+          icon: Users,
+          color: 'purple',
+        },
+        {
+          title: 'Meta Global',
+          value: `${progress}%`,
+          trend: `Nível ${impactLevel}`,
+          icon: TrendingUp,
+          color: progress >= 100 ? 'emerald' : 'orange',
+        },
+      ],
+      totalRaised,
+      progress,
+      impactLevel,
+      goalReached: progress >= 100
+    };
+  }, [campaigns, orgProfile.globalGoal]);
 
   const value = useMemo(() => ({
     campaigns,
@@ -231,7 +253,8 @@ export function CampaignProvider({ children }) {
     updateCampaign,
     updateOrgProfile,
     dismissNotification,
-  }), [campaigns, stats, activityFeed, notification, orgProfile, addCampaign, removeCampaign, updateCampaign, updateOrgProfile, dismissNotification]);
+    showNotification,
+  }), [campaigns, stats, activityFeed, notification, orgProfile, addCampaign, removeCampaign, updateCampaign, updateOrgProfile, dismissNotification, showNotification]);
 
   return (
     <CampaignContext.Provider value={value}>

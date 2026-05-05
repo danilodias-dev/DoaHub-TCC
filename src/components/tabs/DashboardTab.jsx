@@ -10,9 +10,12 @@ import {
   ChevronRight,
   AlertTriangle,
   Lightbulb,
+  ShieldCheck, 
+  Download,
 } from 'lucide-react';
 import { useCampaigns } from '../../context/CampaignContext';
 import { ActivityFeedModal } from '../ui/ActivityFeedModal';
+import { downloadDonationReceipt } from '../../utils/receiptGenerator';
 
 /**
  * ============================================
@@ -36,7 +39,7 @@ const fadeUp = {
 };
 
 export function DashboardTab() {
-  const { campaigns, stats, activityFeed } = useCampaigns();
+  const { campaigns, stats, activityFeed, orgProfile } = useCampaigns();
   const [isFeedOpen, setIsFeedOpen] = useState(false);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [dismissedTips, setDismissedTips] = useState([]);
@@ -133,13 +136,41 @@ export function DashboardTab() {
     <>
       {/* Saudação */}
       <div className="flex flex-col gap-1">
-        <h2 className="text-3xl font-display font-bold text-graphite-dark">
-          Olá, Instituto Esperança 👋
+        <h2 className="text-3xl font-display font-bold text-graphite-dark flex items-center gap-2">
+          Olá, {orgProfile.name} 👋
+          {orgProfile.isVerified && (
+            <ShieldCheck className="w-8 h-8 text-emerald mt-1" title="ONG Verificada" />
+          )}
         </h2>
         <p className="text-graphite-light font-medium">
           Bem vindo ao painel de gestão. Aqui está o resumo do seu impacto.
         </p>
       </div>
+
+      {stats.goalReached && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: -20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          className="bg-gradient-to-r from-emerald to-emerald-light rounded-2xl p-6 shadow-xl shadow-emerald/20 flex items-center justify-between overflow-hidden relative"
+        >
+          {/* Confetti decoration */}
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-10 right-20 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
+          
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+              <span className="text-3xl">🎉</span>
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-2xl text-white">Meta Global Atingida!</h3>
+              <p className="text-white/90 font-medium">
+                Parabéns! Vocês alcançaram 100% da meta de R$ {orgProfile.globalGoal.toLocaleString('pt-BR')}. 
+                O impacto social subiu para <strong className="text-white">Nível {stats.impactLevel}</strong>.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* ────────────── Métricas Superiores ────────────── */}
       <motion.div
@@ -148,7 +179,7 @@ export function DashboardTab() {
         initial="hidden"
         animate="visible"
       >
-        {stats.map((s, idx) => (
+        {stats.cards.map((s, idx) => (
           <motion.div
             key={s.title}
             variants={fadeUp}
@@ -316,7 +347,7 @@ export function DashboardTab() {
                     }`}>
                       <a.icon className="w-5 h-5" />
                     </div>
-                    <div className="flex flex-col min-w-0">
+                    <div className="flex flex-col min-w-0 flex-1">
                       <p className="text-sm font-medium text-graphite-dark truncate">
                         <span className="font-bold">{a.name}</span>
                         {a.amount ? (
@@ -327,6 +358,16 @@ export function DashboardTab() {
                         {a.action} • {a.time}
                       </p>
                     </div>
+                    {a.type === 'donation' && (
+                      <button
+                        onClick={() => downloadDonationReceipt(a, orgProfile)}
+                        className="w-8 h-8 rounded-lg bg-ice hover:bg-emerald/10 flex items-center justify-center text-graphite-light hover:text-emerald transition-colors flex-shrink-0"
+                        title="Baixar Recibo"
+                        aria-label="Baixar Recibo"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </motion.div>
                 ))}
               </AnimatePresence>
