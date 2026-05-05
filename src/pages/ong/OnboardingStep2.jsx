@@ -90,7 +90,7 @@ export function OnboardingStep2() {
     }
 
     // All validations passed — proceed
-    navigate('/ong/dashboard');
+    navigate('/ong/onboarding/sucesso');
   };
 
   const handleTermsToggle = () => {

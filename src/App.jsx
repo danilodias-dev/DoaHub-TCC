@@ -29,6 +29,7 @@ import { OnboardingStep1 } from './pages/ong/OnboardingStep1';
 import { OnboardingStep2 } from './pages/ong/OnboardingStep2';
 import { DashboardONG } from './pages/ong/DashboardONG';
 import { PerfilInstituicao } from './pages/ong/PerfilInstituicao';
+import { OnboardingSuccess } from './pages/ong/OnboardingSuccess';
 
 // Shared
 import { Configuracoes } from './pages/shared/Configuracoes';
@@ -72,6 +73,7 @@ function AppRoutes() {
         <Route path="/instituicao/:id" element={<PerfilInstituicao />} />
         <Route path="/ong/onboarding/1" element={<OnboardingStep1 />} />
         <Route path="/ong/onboarding/2" element={<OnboardingStep2 />} />
+        <Route path="/ong/onboarding/sucesso" element={<OnboardingSuccess />} />
         <Route path="/ong/dashboard" element={<DashboardONG />} />
         
         {/* Shared */}
