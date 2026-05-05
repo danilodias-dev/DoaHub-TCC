@@ -2,17 +2,16 @@ import { motion } from 'framer-motion';
 import { Mail, Globe, MapPin, CheckCircle2, ShieldCheck, Heart, Megaphone, FileText, Share2 } from 'lucide-react';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { CampaignCard } from '../../components/ui/CampaignCard';
+import { useCampaigns } from '../../context/CampaignContext';
 
 export function PerfilInstituicao() {
+  const { campaigns, orgProfile } = useCampaigns();
+
   const pageVariants = {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
     exit: { opacity: 0 }
   };
-
-  const campaigns = [
-// ... existing campaigns ...
-  ];
 
   return (
     <motion.div 
@@ -52,7 +51,7 @@ export function PerfilInstituicao() {
 
             <div className="flex-1 flex flex-col gap-3 mb-4 text-center md:text-left">
               <div className="flex flex-col md:flex-row md:items-center gap-3">
-                <h1 className="text-3xl md:text-5xl font-display font-extrabold text-white">Instituto Esperança</h1>
+                <h1 className="text-3xl md:text-5xl font-display font-extrabold text-white">{orgProfile.name}</h1>
                 <span className="inline-flex px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-bold text-white/80 uppercase tracking-widest border border-white/10 self-center md:self-auto">Organização Auditada</span>
               </div>
               <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 text-white/60 font-medium">

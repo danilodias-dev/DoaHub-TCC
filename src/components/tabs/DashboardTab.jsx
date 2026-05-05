@@ -1,11 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Megaphone,
   ArrowUpRight,
   MoreVertical,
   Clock,
-  CheckCircle,
   ChevronLeft,
   ChevronRight,
   AlertTriangle,
@@ -38,7 +37,7 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
 };
 
-export function DashboardTab() {
+export const DashboardTab = memo(function DashboardTab() {
   const { campaigns, stats, activityFeed, orgProfile } = useCampaigns();
   const [isFeedOpen, setIsFeedOpen] = useState(false);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
@@ -450,5 +449,5 @@ export function DashboardTab() {
       />
     </>
   );
-}
+});
 

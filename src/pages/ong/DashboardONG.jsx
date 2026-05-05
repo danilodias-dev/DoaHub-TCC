@@ -18,12 +18,14 @@ import { DashboardTab } from '../../components/tabs/DashboardTab';
 import { CampaignsTab } from '../../components/tabs/CampaignsTab';
 import { ReportsTab } from '../../components/tabs/ReportsTab';
 import { SettingsTab } from '../../components/tabs/SettingsTab';
-import { useCampaigns } from '../../context/CampaignContext';
+import { useCampaigns, useNotification } from '../../context/CampaignContext';
+import { useMemo } from 'react';
 
 export function DashboardONG() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { notification, addCampaign, dismissNotification, orgProfile, showNotification } = useCampaigns();
+  const { addCampaign, orgProfile } = useCampaigns();
+  const { notification, dismissNotification, showNotification } = useNotification();
 
   const handleOpenNewCampaign = () => {
     if (!orgProfile.isVerified) {
@@ -44,7 +46,7 @@ export function DashboardONG() {
   };
 
   // Renderiza o conteúdo da aba ativa
-  const renderTabContent = () => {
+  const tabContent = useMemo(() => {
     switch (activeTab) {
       case 'dashboard':
         return <DashboardTab />;
@@ -57,7 +59,7 @@ export function DashboardONG() {
       default:
         return <DashboardTab />;
     }
-  };
+  }, [activeTab, handleOpenNewCampaign]);
 
   return (
     <motion.div 
@@ -134,7 +136,7 @@ export function DashboardONG() {
 
          {/* Scrollable Area — Tab Content */}
          <div className="p-4 lg:p-8 pb-24 lg:pb-8 flex flex-col gap-6 lg:gap-8 max-w-7xl">
-            {renderTabContent()}
+            {tabContent}
          </div>
       </main>
 

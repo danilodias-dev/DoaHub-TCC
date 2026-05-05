@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Heart, ShieldCheck, Globe2, Target, Users, Zap } from 'lucide-react';
+import { Heart, ShieldCheck, Globe2, Target, Zap } from 'lucide-react';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { Link } from 'react-router-dom';
 

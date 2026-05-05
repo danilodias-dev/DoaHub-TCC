@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, memo } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Building2, 
@@ -22,7 +22,7 @@ import { useCampaigns } from '../../context/CampaignContext';
  * e preferências de notificação da instituição.
  */
 
-export function SettingsTab() {
+export const SettingsTab = memo(function SettingsTab() {
   const { orgProfile, updateOrgProfile } = useCampaigns();
   
   // Estado local para os inputs (evitar renders excessivos no contexto enquanto digita)
@@ -410,7 +410,7 @@ export function SettingsTab() {
       </div>
     </>
   );
-}
+});
 
 // Subcomponente de Switch (Toggle)
 // eslint-disable-next-line react/prop-types

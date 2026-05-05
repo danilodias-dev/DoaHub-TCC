@@ -1,5 +1,6 @@
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Filter, Grid, List, MapPin, Calendar, Heart } from 'lucide-react';
+import { Search, Grid, List } from 'lucide-react';
 import { useState } from 'react';
 import { CampaignCard } from '../../components/ui/CampaignCard';
 import { MOCK_CAMPAIGNS } from '../../data/mockData';
@@ -111,5 +112,4 @@ export function ExplorarCampanhas() {
   );
 }
 
-// Internal Link Helper
-import { Link } from 'react-router-dom';
+

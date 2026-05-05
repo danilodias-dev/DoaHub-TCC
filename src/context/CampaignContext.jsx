@@ -1,23 +1,22 @@
 /* eslint-disable react/prop-types */
-import { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import { createContext, useContext, useReducer, useMemo, useCallback } from 'react';
 import { DollarSign, Megaphone, Users, TrendingUp, CheckCircle2, FileText, Sparkles, Trash2, Pencil } from 'lucide-react';
 
 /**
  * ============================================
- * DoaHub — Campaign Context (Estado Global)
+ * DoaHub — Campaign Context (Refatorado)
  * ============================================
  * Centraliza o estado de campanhas, atividades
- * e métricas derivadas usadas no dashboard da ONG.
+ * e métricas. Contextos separados para evitar
+ * re-renderizações desnecessárias com notificações.
  */
 
-// ─── Dados Iniciais (Seed) ──────────────────────────────────
 const INITIAL_CAMPAIGNS = [
   { id: 1, title: 'Alimentação Sertão PE', status: 'Ativa', raised: 42500, goal: 50000, donors: 312, category: 'Alimentação', description: 'Distribuição de cestas básicas para famílias em situação de vulnerabilidade no sertão pernambucano.' },
   { id: 2, title: 'Reforma Escola Comunitária', status: 'Ativa', raised: 15000, goal: 30000, donors: 145, category: 'Educação', description: 'Reforma completa da infraestrutura da escola comunitária do bairro Santo Amaro.' },
   { id: 3, title: 'Kit Escolar 2024', status: 'Finalizada', raised: 22000, goal: 20000, donors: 210, category: 'Educação', description: 'Distribuição de kits escolares completos para crianças carentes.' },
 ];
 
-// ─── Feed de Atividade Inicial ──────────────────────────────
 const INITIAL_ACTIVITY = [
   { id: 1, name: 'Ana Silva', amount: 'R$ 150', time: 'Há 5 min', action: 'Doação recebida', icon: DollarSign, type: 'donation' },
   { id: 2, name: 'Eduardo M.', amount: 'R$ 50', time: 'Há 12 min', action: 'Novo doador mensal', icon: Users, type: 'donor' },
@@ -30,7 +29,6 @@ const INITIAL_ACTIVITY = [
 const BASE_RAISED_TOTAL = 124500;
 const BASE_DONORS = 1240;
 
-// ─── Perfil Organizacional Inicial ──────────────────────────
 const INITIAL_ORG_PROFILE = {
   name: 'Instituto Esperança',
   bio: 'Organização sem fins lucrativos dedicada à transformação social no sertão nordestino, com foco em segurança alimentar, educação e desenvolvimento comunitário.',
@@ -43,22 +41,19 @@ const INITIAL_ORG_PROFILE = {
   isVerified: false,
   globalGoal: 150000,
   notifications: {
-    emailDoacoes: true,
-    emailRelatorios: true,
-    emailCampanhas: false,
-    pushDoacoes: true,
-    pushMetas: true,
-    pushRelatorios: false,
+    emailDoacoes: true, emailRelatorios: true, emailCampanhas: false,
+    pushDoacoes: true, pushMetas: true, pushRelatorios: false,
   },
 };
 
-const CampaignContext = createContext(null);
+const INITIAL_STATE = {
+  campaigns: INITIAL_CAMPAIGNS,
+  activityFeed: INITIAL_ACTIVITY,
+  orgProfile: INITIAL_ORG_PROFILE,
+};
 
-// ─── Helpers ─────────────────────────────────────────────────
 function formatTimeAgo(date) {
-  const now = new Date();
-  const diffMs = now - date;
-  const diffMin = Math.floor(diffMs / 60000);
+  const diffMin = Math.floor((new Date() - date) / 60000);
   if (diffMin < 1) return 'Agora mesmo';
   if (diffMin < 60) return `Há ${diffMin} min`;
   const diffH = Math.floor(diffMin / 60);
@@ -66,124 +61,97 @@ function formatTimeAgo(date) {
   return `Há ${Math.floor(diffH / 24)}d`;
 }
 
+// ─── Reducer ──────────────────────────────────────────────────
+function campaignReducer(state, action) {
+  switch (action.type) {
+    case 'UPDATE_ORG_PROFILE':
+      return { ...state, orgProfile: { ...state.orgProfile, ...action.payload } };
+    
+    case 'ADD_CAMPAIGN': {
+      const newCampaign = { ...action.payload, id: Date.now(), status: 'Ativa', raised: 0, donors: 0 };
+      const newActivity = {
+        id: Date.now(), name: newCampaign.title, amount: `Meta: R$ ${newCampaign.goal.toLocaleString('pt-BR')}`,
+        time: formatTimeAgo(new Date()), action: 'Nova campanha criada', icon: Sparkles, type: 'campaign_created',
+      };
+      return { ...state, campaigns: [newCampaign, ...state.campaigns], activityFeed: [newActivity, ...state.activityFeed] };
+    }
+    
+    case 'REMOVE_CAMPAIGN': {
+      const campaign = state.campaigns.find(c => c.id === action.payload);
+      if (!campaign) return state;
+      const newActivity = {
+        id: Date.now(), name: campaign.title, amount: null, time: formatTimeAgo(new Date()),
+        action: 'Campanha removida', icon: Trash2, type: 'campaign_removed',
+      };
+      return { ...state, campaigns: state.campaigns.filter(c => c.id !== action.payload), activityFeed: [newActivity, ...state.activityFeed] };
+    }
+
+    case 'UPDATE_CAMPAIGN': {
+      const { id, updates } = action.payload;
+      const campaign = state.campaigns.find(c => c.id === id);
+      const name = updates.title || campaign?.title || 'Campanha';
+      const newActivity = {
+        id: Date.now(), name, amount: null, time: formatTimeAgo(new Date()),
+        action: 'Campanha atualizada', icon: Pencil, type: 'campaign_updated',
+      };
+      return {
+        ...state,
+        campaigns: state.campaigns.map(c => c.id === id ? { ...c, ...updates } : c),
+        activityFeed: [newActivity, ...state.activityFeed]
+      };
+    }
+
+    default:
+      return state;
+  }
+}
+
+// ─── Contextos ────────────────────────────────────────────────
+const CampaignContext = createContext(null);
+const NotificationContext = createContext(null);
+
 export function CampaignProvider({ children }) {
-  const [campaigns, setCampaigns] = useState(INITIAL_CAMPAIGNS);
-  const [activityFeed, setActivityFeed] = useState(INITIAL_ACTIVITY);
-  const [notification, setNotification] = useState(null);
-  const [orgProfile, setOrgProfile] = useState(INITIAL_ORG_PROFILE);
-
-  // ─── Atualizar Perfil Organizacional ────────────────────────
-  const updateOrgProfile = useCallback((updates) => {
-    setOrgProfile(prev => ({ ...prev, ...updates }));
-    setNotification({
-      type: 'success',
-      title: 'Configurações salvas!',
-      message: 'As informações da organização foram atualizadas com sucesso.',
-    });
-    setTimeout(() => setNotification(null), 4000);
-  }, []);
-
-  // ─── Adicionar Nova Campanha ────────────────────────────────
-  const addCampaign = useCallback((campaignData) => {
-    const newCampaign = {
-      ...campaignData,
-      id: Date.now(),
-      status: 'Ativa',
-      raised: 0,
-      donors: 0,
-    };
-
-    setCampaigns(prev => [newCampaign, ...prev]);
-
-    // Adiciona evento ao feed de atividade
-    const activityEvent = {
-      id: Date.now(),
-      name: newCampaign.title,
-      amount: `Meta: R$ ${newCampaign.goal.toLocaleString('pt-BR')}`,
-      time: formatTimeAgo(new Date()),
-      action: 'Nova campanha criada',
-      icon: Sparkles,
-      type: 'campaign_created',
-    };
-    setActivityFeed(prev => [activityEvent, ...prev]);
-
-    // Dispara notificação de sucesso
-    setNotification({
-      type: 'success',
-      title: 'Campanha criada com sucesso!',
-      message: `"${newCampaign.title}" está ativa e pronta para receber doações.`,
-    });
-
-    // Auto-dismiss após 5s
-    setTimeout(() => setNotification(null), 5000);
-
-    return newCampaign;
-  }, []);
+  const [state, dispatch] = useReducer(campaignReducer, INITIAL_STATE);
+  
+  // Notification isolado usa um reducer ou estado simples? Estado simples basta.
+  const [notification, setNotificationState] = useReducer((prev, action) => {
+    if (action === null) return null;
+    return action;
+  }, null);
 
   const showNotification = useCallback((type, title, message) => {
-    setNotification({ type, title, message });
-    setTimeout(() => setNotification(null), 5000);
+    setNotificationState({ type, title, message });
+    setTimeout(() => setNotificationState(null), 5000);
   }, []);
 
   const dismissNotification = useCallback(() => {
-    setNotification(null);
+    setNotificationState(null);
   }, []);
 
-  // ─── Remover Campanha ───────────────────────────────────────
-  const removeCampaign = useCallback((campaignId) => {
-    const campaign = campaigns.find(c => c.id === campaignId);
-    if (!campaign) return;
+  // Actions encadeadas
+  const updateOrgProfile = useCallback((updates) => {
+    dispatch({ type: 'UPDATE_ORG_PROFILE', payload: updates });
+    showNotification('success', 'Configurações salvas!', 'As informações foram atualizadas com sucesso.');
+  }, [showNotification]);
 
-    setCampaigns(prev => prev.filter(c => c.id !== campaignId));
+  const addCampaign = useCallback((campaignData) => {
+    dispatch({ type: 'ADD_CAMPAIGN', payload: campaignData });
+    showNotification('success', 'Campanha criada!', `"${campaignData.title}" está ativa.`);
+  }, [showNotification]);
 
-    // Evento no feed
-    setActivityFeed(prev => [{
-      id: Date.now(),
-      name: campaign.title,
-      amount: null,
-      time: formatTimeAgo(new Date()),
-      action: 'Campanha removida',
-      icon: Trash2,
-      type: 'campaign_removed',
-    }, ...prev]);
+  const removeCampaign = useCallback((id) => {
+    dispatch({ type: 'REMOVE_CAMPAIGN', payload: id });
+    showNotification('info', 'Campanha removida', 'A campanha foi removida com sucesso.');
+  }, [showNotification]);
 
-    setNotification({
-      type: 'info',
-      title: 'Campanha removida',
-      message: `"${campaign.title}" foi removida com sucesso.`,
-    });
-    setTimeout(() => setNotification(null), 4000);
-  }, [campaigns]);
+  const updateCampaign = useCallback((id, updates) => {
+    dispatch({ type: 'UPDATE_CAMPAIGN', payload: { id, updates } });
+    showNotification('success', 'Campanha atualizada!', 'As informações foram atualizadas.');
+  }, [showNotification]);
 
-  // ─── Atualizar Campanha ─────────────────────────────────────
-  const updateCampaign = useCallback((campaignId, updates) => {
-    setCampaigns(prev => prev.map(c =>
-      c.id === campaignId ? { ...c, ...updates } : c
-    ));
-
-    const campaign = campaigns.find(c => c.id === campaignId);
-    const name = updates.title || campaign?.title || 'Campanha';
-
-    setActivityFeed(prev => [{
-      id: Date.now(),
-      name,
-      amount: null,
-      time: formatTimeAgo(new Date()),
-      action: 'Campanha atualizada',
-      icon: Pencil,
-      type: 'campaign_updated',
-    }, ...prev]);
-
-    setNotification({
-      type: 'success',
-      title: 'Campanha atualizada!',
-      message: `"${name}" foi atualizada com sucesso.`,
-    });
-    setTimeout(() => setNotification(null), 4000);
-  }, [campaigns]);
-
-  // ─── Métricas Derivadas (recalculadas automaticamente) ─────
+  // Derived Stats
   const stats = useMemo(() => {
+    const { campaigns, orgProfile } = state;
     const activeCampaigns = campaigns.filter(c => c.status === 'Ativa');
     const newCampaignsCount = campaigns.length - INITIAL_CAMPAIGNS.length;
     const additionalRaised = campaigns
@@ -198,75 +166,48 @@ export function CampaignProvider({ children }) {
     const goal = orgProfile.globalGoal || 150000;
     const progress = Math.min(Math.round((totalRaised / goal) * 100), 100);
     
-    let impactLevel = 'Iniciante';
-    if (progress >= 100) impactLevel = 'Embaixador';
-    else if (progress >= 75) impactLevel = 'Ouro';
-    else if (progress >= 50) impactLevel = 'Prata';
-    else if (progress >= 25) impactLevel = 'Bronze';
+    let impactLevel = progress >= 100 ? 'Embaixador' : progress >= 75 ? 'Ouro' : progress >= 50 ? 'Prata' : progress >= 25 ? 'Bronze' : 'Iniciante';
 
     return {
       cards: [
-        {
-          title: 'Total Arrecadado',
-          value: `R$ ${totalRaised.toLocaleString('pt-BR')}`,
-          trend: '+12%',
-          icon: DollarSign,
-          color: 'emerald',
-        },
-        {
-          title: 'Campanhas Ativas',
-          value: String(activeCampaigns.length),
-          trend: newCampaignsCount > 0 ? `${newCampaignsCount} nova${newCampaignsCount > 1 ? 's' : ''}` : '2 novas',
-          icon: Megaphone,
-          color: 'blue',
-        },
-        {
-          title: 'Doadores Ativos',
-          value: totalDonors.toLocaleString('pt-BR'),
-          trend: '+5%',
-          icon: Users,
-          color: 'purple',
-        },
-        {
-          title: 'Meta Global',
-          value: `${progress}%`,
-          trend: `Nível ${impactLevel}`,
-          icon: TrendingUp,
-          color: progress >= 100 ? 'emerald' : 'orange',
-        },
+        { title: 'Total Arrecadado', value: `R$ ${totalRaised.toLocaleString('pt-BR')}`, trend: '+12%', icon: DollarSign, color: 'emerald' },
+        { title: 'Campanhas Ativas', value: String(activeCampaigns.length), trend: newCampaignsCount > 0 ? `${newCampaignsCount} novas` : '2 novas', icon: Megaphone, color: 'blue' },
+        { title: 'Doadores Ativos', value: totalDonors.toLocaleString('pt-BR'), trend: '+5%', icon: Users, color: 'purple' },
+        { title: 'Meta Global', value: `${progress}%`, trend: `Nível ${impactLevel}`, icon: TrendingUp, color: progress >= 100 ? 'emerald' : 'orange' },
       ],
-      totalRaised,
-      progress,
-      impactLevel,
-      goalReached: progress >= 100
+      totalRaised, progress, impactLevel, goalReached: progress >= 100
     };
-  }, [campaigns, orgProfile.globalGoal]);
+  }, [state.campaigns, state.orgProfile.globalGoal]);
 
-  const value = useMemo(() => ({
-    campaigns,
+  const campaignValue = useMemo(() => ({
+    campaigns: state.campaigns,
+    activityFeed: state.activityFeed,
+    orgProfile: state.orgProfile,
     stats,
-    activityFeed,
-    notification,
-    orgProfile,
-    addCampaign,
-    removeCampaign,
-    updateCampaign,
-    updateOrgProfile,
-    dismissNotification,
-    showNotification,
-  }), [campaigns, stats, activityFeed, notification, orgProfile, addCampaign, removeCampaign, updateCampaign, updateOrgProfile, dismissNotification, showNotification]);
+    addCampaign, removeCampaign, updateCampaign, updateOrgProfile,
+  }), [state, stats, addCampaign, removeCampaign, updateCampaign, updateOrgProfile]);
+
+  const notificationValue = useMemo(() => ({
+    notification, showNotification, dismissNotification
+  }), [notification, showNotification, dismissNotification]);
 
   return (
-    <CampaignContext.Provider value={value}>
-      {children}
-    </CampaignContext.Provider>
+    <NotificationContext.Provider value={notificationValue}>
+      <CampaignContext.Provider value={campaignValue}>
+        {children}
+      </CampaignContext.Provider>
+    </NotificationContext.Provider>
   );
 }
 
 export function useCampaigns() {
   const context = useContext(CampaignContext);
-  if (!context) {
-    throw new Error('useCampaigns deve ser usado dentro de um CampaignProvider');
-  }
+  if (!context) throw new Error('useCampaigns deve ser usado dentro de CampaignProvider');
+  return context;
+}
+
+export function useNotification() {
+  const context = useContext(NotificationContext);
+  if (!context) throw new Error('useNotification deve ser usado dentro de CampaignProvider');
   return context;
 }

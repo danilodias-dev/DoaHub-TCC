@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, ChevronLeft, Lock, Info, QrCode, Copy } from 'lucide-react';
+import { ShieldCheck, ChevronLeft, Lock, QrCode, Copy } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 

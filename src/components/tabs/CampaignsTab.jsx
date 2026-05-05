@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Megaphone,
@@ -30,7 +30,7 @@ const FILTERS = [
   { label: 'Finalizadas', value: 'Finalizada' },
 ];
 
-export function CampaignsTab({ onOpenModal }) {
+export const CampaignsTab = memo(function CampaignsTab({ onOpenModal }) {
   const { campaigns, removeCampaign, updateCampaign } = useCampaigns();
   const [filter, setFilter] = useState('all');
   const [editingId, setEditingId] = useState(null);
@@ -360,4 +360,4 @@ export function CampaignsTab({ onOpenModal }) {
       )}
     </>
   );
-}
+});

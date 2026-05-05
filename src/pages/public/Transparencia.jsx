@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ShieldCheck, Eye, PieChart, TrendingUp, DollarSign, ArrowUpRight, ExternalLink, Users } from 'lucide-react';
+import { Eye, TrendingUp, ArrowUpRight, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MOCK_GLOBAL_STATS, MOCK_AUDIT_LOG, MOCK_PILLARS } from '../../data/mockData';
 

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   AreaChart, Area, BarChart, Bar,
@@ -82,7 +82,7 @@ const EMERALD_LIGHT = '#a3e4bc';
 const SKY = '#3b82f6';
 const AMBER = '#f59e0b';
 
-export function ReportsTab() {
+export const ReportsTab = memo(function ReportsTab() {
   const { campaigns } = useCampaigns();
   const [chartType, setChartType] = useState('doacoes');
   const [showAllReports, setShowAllReports] = useState(false);
@@ -501,4 +501,4 @@ export function ReportsTab() {
       </AnimatePresence>
     </>
   );
-}
+});
