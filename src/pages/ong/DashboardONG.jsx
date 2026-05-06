@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Megaphone, 
@@ -11,6 +11,7 @@ import {
   Bell,
   ShieldCheck,
   Clock,
+  AlertTriangle,
 } from 'lucide-react';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { NewCampaignModal } from '../../components/ui/NewCampaignModal';
@@ -23,6 +24,7 @@ import { useCampaigns, useNotification } from '../../context/CampaignContext';
 import { useMemo } from 'react';
 
 export function DashboardONG() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addCampaign, orgProfile } = useCampaigns();
@@ -30,11 +32,7 @@ export function DashboardONG() {
 
   const handleOpenNewCampaign = () => {
     if (!orgProfile.isVerified) {
-      showNotification(
-        'error',
-        'Acesso Negado',
-        'Sua ONG precisa estar verificada para publicar novas campanhas. Conclua o envio da documentação.'
-      );
+      navigate('/ong/onboarding/2');
       return;
     }
     setIsModalOpen(true);
@@ -133,8 +131,13 @@ export function DashboardONG() {
                   <Bell className="w-5 h-5" />
                   <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                </button>
-               <PremiumButton size="sm" className="hidden md:flex gap-2" onClick={handleOpenNewCampaign}>
-                  <Plus className="w-4 h-4" /> Nova Campanha
+               <PremiumButton 
+                 size="sm" 
+                 className={`hidden md:flex gap-2 ${!orgProfile.isVerified ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/20' : ''}`} 
+                 onClick={handleOpenNewCampaign}
+               >
+                 {!orgProfile.isVerified ? <AlertTriangle className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                 {!orgProfile.isVerified ? 'Concluir Cadastro' : 'Nova Campanha'}
                </PremiumButton>
             </div>
          </header>
