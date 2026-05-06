@@ -11,6 +11,7 @@ import {
   Lightbulb,
   ShieldCheck, 
   Download,
+  X,
 } from 'lucide-react';
 import { useCampaigns } from '../../context/CampaignContext';
 import { ActivityFeedModal } from '../ui/ActivityFeedModal';
@@ -43,6 +44,7 @@ export const DashboardTab = memo(function DashboardTab() {
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [dismissedTips, setDismissedTips] = useState([]);
   const [manualNavTrigger, setManualNavTrigger] = useState(0);
+  const [hideCelebration, setHideCelebration] = useState(false);
 
   // 1. Dicas Ativas (Prioridade Alta)
   const activeTips = useMemo(() => {
@@ -56,7 +58,7 @@ export const DashboardTab = memo(function DashboardTab() {
         title: 'Ação Necessária ⚠️',
         text: 'Você ainda não aceitou os Termos de Uso atualizados da plataforma.',
         buttonText: 'Revisar Termos',
-        color: 'bg-emerald shadow-emerald/20',
+        color: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
         icon: AlertTriangle,
         action: () => setDismissedTips(prev => [...prev, 'terms'])
       });
@@ -73,7 +75,7 @@ export const DashboardTab = memo(function DashboardTab() {
           title: 'Quase lá! 🎯',
           text: `Sua campanha "${c.title}" está em ${Math.round(perc * 100)}%. Que tal um post de agradecimento?`,
           buttonText: 'Criar Postagem',
-          color: 'bg-emerald shadow-emerald/20',
+          color: 'bg-emerald/5 text-emerald-dark border-emerald/10',
           icon: Megaphone,
           action: () => setDismissedTips(prev => [...prev, tipId])
         });
@@ -91,7 +93,7 @@ export const DashboardTab = memo(function DashboardTab() {
       title: 'Dica de Impacto 💡',
       text: 'Campanhas com fotos reais do impacto aumentam a doação média em 45%.',
       buttonText: 'Atualizar fotos',
-      color: 'bg-emerald shadow-emerald/20',
+      color: 'bg-emerald/5 text-emerald-dark border-emerald/10',
       icon: Lightbulb,
       action: () => {}
     },
@@ -101,7 +103,7 @@ export const DashboardTab = memo(function DashboardTab() {
       title: 'Você sabia? 📊',
       text: 'Doadores recorrentes são 3x mais propensos a indicar novos membros.',
       buttonText: 'Ver relatórios',
-      color: 'bg-emerald shadow-emerald/20',
+      color: 'bg-emerald/5 text-emerald-dark border-emerald/10',
       icon: Clock, // Mantendo icon de relogio solicitado
       action: () => {}
     }
@@ -146,7 +148,7 @@ export const DashboardTab = memo(function DashboardTab() {
         </p>
       </div>
 
-      {stats.goalReached && (
+      {stats.goalReached && !hideCelebration && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: -20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -168,6 +170,14 @@ export const DashboardTab = memo(function DashboardTab() {
               </p>
             </div>
           </div>
+
+          <button 
+            onClick={() => setHideCelebration(true)}
+            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors z-20"
+            aria-label="Fechar celebração"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </motion.div>
       )}
 
@@ -381,7 +391,7 @@ export const DashboardTab = memo(function DashboardTab() {
           </div>
 
           {/* Card Dica Inteligente */}
-          <div className="relative bg-emerald rounded-[2rem] p-8 pb-12 text-white shadow-xl shadow-emerald/20 min-h-[200px] flex flex-col justify-center overflow-hidden">
+          <div className="relative bg-white rounded-[2rem] p-8 pb-12 text-graphite-dark shadow-sm border border-graphite/5 min-h-[200px] flex flex-col justify-center overflow-hidden">
             <AnimatePresence mode="wait">
               {currentTip && (
                 <motion.div
@@ -392,17 +402,17 @@ export const DashboardTab = memo(function DashboardTab() {
                   transition={{ duration: 0.3 }}
                   className="relative z-10 w-full"
                 >
-                  <div className="absolute top-0 right-0 opacity-20 -mr-4 -mt-4 pointer-events-none">
-                    <currentTip.icon className="w-24 h-24 rotate-12" />
+                  <div className="absolute top-0 right-0 opacity-5 -mr-4 -mt-4 pointer-events-none">
+                    <currentTip.icon className="w-24 h-24 rotate-12 text-emerald" />
                   </div>
                   <div className="pr-4">
-                    <h4 className="font-display font-bold text-xl mb-2">{currentTip.title}</h4>
-                    <p className="text-white/90 text-sm font-medium leading-relaxed mb-4 min-h-[40px]">
+                    <h4 className="font-display font-bold text-xl mb-2 text-graphite-dark">{currentTip.title}</h4>
+                    <p className="text-graphite-light text-sm font-medium leading-relaxed mb-4 min-h-[40px]">
                       {currentTip.text}
                     </p>
                     <button 
                       onClick={currentTip.action}
-                      className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-bold transition-all underline decoration-white/30 self-start inline-block"
+                      className="px-4 py-2 bg-emerald/5 hover:bg-emerald/10 text-emerald rounded-lg text-xs font-bold transition-all border border-emerald/10 self-start inline-block"
                     >
                       {currentTip.buttonText}
                     </button>
@@ -414,7 +424,7 @@ export const DashboardTab = memo(function DashboardTab() {
             {/* Navegação Manual */}
             {allTips.length > 1 && (
               <div className="absolute bottom-4 left-0 right-0 flex items-center justify-center gap-4 z-20">
-                <button onClick={prevTip} className="w-7 h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors" aria-label="Dica anterior">
+                <button onClick={prevTip} className="w-7 h-7 flex items-center justify-center rounded-full bg-ice hover:bg-ice-dark text-graphite-light transition-colors" aria-label="Dica anterior">
                   <ChevronLeft className="w-4 h-4 -ml-0.5" />
                 </button>
                 <div className="flex gap-1.5 items-center">
@@ -426,13 +436,13 @@ export const DashboardTab = memo(function DashboardTab() {
                         setManualNavTrigger(prev => prev + 1);
                       }}
                       className={`h-1.5 rounded-full transition-all duration-300 ${
-                        idx === safeIndex ? 'bg-white w-4' : 'bg-white/40 hover:bg-white/60 w-1.5'
+                        idx === safeIndex ? 'bg-emerald w-4' : 'bg-graphite/10 hover:bg-graphite/20 w-1.5'
                       }`}
                       aria-label={`Ir para a dica ${idx + 1}`}
                     />
                   ))}
                 </div>
-                <button onClick={nextTip} className="w-7 h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors" aria-label="Próxima dica">
+                <button onClick={nextTip} className="w-7 h-7 flex items-center justify-center rounded-full bg-ice hover:bg-ice-dark text-graphite-light transition-colors" aria-label="Próxima dica">
                   <ChevronRight className="w-4 h-4 ml-0.5" />
                 </button>
               </div>
