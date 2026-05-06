@@ -391,7 +391,7 @@ export const DashboardTab = memo(function DashboardTab() {
           </div>
 
           {/* Card Dica Inteligente */}
-          <div className="relative bg-white rounded-[2rem] p-8 pb-12 text-graphite-dark shadow-sm border border-graphite/5 min-h-[200px] flex flex-col justify-center overflow-hidden">
+          <div className="relative bg-emerald/5 rounded-[2rem] p-8 pb-12 text-graphite-dark shadow-sm border border-emerald/20 min-h-[200px] flex flex-col justify-center overflow-hidden">
             <AnimatePresence mode="wait">
               {currentTip && (
                 <motion.div
@@ -407,7 +407,7 @@ export const DashboardTab = memo(function DashboardTab() {
                   </div>
                   <div className="pr-4">
                     <h4 className="font-display font-bold text-xl mb-2 text-graphite-dark">{currentTip.title}</h4>
-                    <p className="text-graphite-light text-sm font-medium leading-relaxed mb-4 min-h-[40px]">
+                    <p className="text-graphite-dark text-sm font-medium leading-relaxed mb-4 min-h-[40px]">
                       {currentTip.text}
                     </p>
                     <button 
