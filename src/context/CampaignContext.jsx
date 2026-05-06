@@ -30,6 +30,7 @@ const BASE_RAISED_TOTAL = 124500;
 const BASE_DONORS = 1240;
 
 const INITIAL_ORG_PROFILE = {
+  id: 1,
   name: 'Instituto Esperança',
   bio: 'Organização sem fins lucrativos dedicada à transformação social no sertão nordestino, com foco em segurança alimentar, educação e desenvolvimento comunitário.',
   email: 'contato@institutoesperanca.org.br',

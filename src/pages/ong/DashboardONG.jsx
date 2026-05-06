@@ -106,7 +106,7 @@ export function DashboardONG() {
                        ? <Clock className="w-3.5 h-3.5 text-amber-500" title="Em Análise" /> 
                        : null}
                  </div>
-                  <Link to="/instituicao/1" className="text-xs text-graphite-light font-medium hover:text-emerald hover:underline transition-colors">
+                  <Link to={`/instituicao/${orgProfile.id}`} className="text-xs text-graphite-light font-medium hover:text-emerald hover:underline transition-colors">
                     Ver Perfil Público
                   </Link>
               </div>
