@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Heart, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Logo } from '../ui/Logo';
 import { HIDDEN_NAV_ROUTES } from '../../data/constants';
 
 const NAV_LINKS = [
@@ -36,12 +37,7 @@ export function NavHeader() {
     <>
       <header className="fixed top-0 w-full z-50 glass">
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-emerald text-white flex items-center justify-center shadow-lg shadow-emerald/40 group-hover:scale-105 transition-transform">
-              <Heart className="w-5 h-5 md:w-6 md:h-6" />
-            </div>
-            <span className="font-display font-bold text-xl md:text-2xl text-graphite-dark tracking-tight">Doa<span className="text-emerald">Hub</span></span>
-          </Link>
+          <Logo />
           
           <nav className="hidden md:flex items-center gap-8 font-medium text-graphite-light">
             {NAV_LINKS.map(link => (
@@ -82,12 +78,7 @@ export function NavHeader() {
               className="absolute right-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl p-6 flex flex-col gap-2"
             >
               <div className="flex justify-between items-center mb-8">
-                <Link to="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2 group">
-                  <div className="w-8 h-8 rounded-lg bg-emerald text-white flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <Heart className="w-5 h-5" />
-                  </div>
-                  <span className="font-display font-bold text-lg text-graphite-dark">DoaHub</span>
-                </Link>
+                <Logo className="scale-90 origin-left" />
                 <button onClick={() => setIsOpen(false)} className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-ice text-graphite-dark transition-colors">
                   <X className="w-6 h-6" />
                 </button>

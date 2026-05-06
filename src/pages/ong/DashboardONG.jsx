@@ -13,6 +13,7 @@ import {
   Clock,
   AlertTriangle,
 } from 'lucide-react';
+import { Logo } from '../../components/ui/Logo';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { NewCampaignModal } from '../../components/ui/NewCampaignModal';
 import { Toast } from '../../components/ui/Toast';
@@ -72,10 +73,7 @@ export function DashboardONG() {
       
       {/* Sidebar Navigation */}
       <aside className="w-64 bg-white border-r border-graphite/5 flex flex-col sticky top-0 h-screen hidden lg:flex">
-        <Link to="/" className="p-8 flex items-center gap-3 hover:opacity-80 transition-opacity">
-           <div className="w-8 h-8 rounded-lg bg-emerald text-white flex items-center justify-center font-bold">D</div>
-           <span className="font-display font-bold text-xl text-graphite-dark tracking-tight">Doa<span className="text-emerald">Hub</span></span>
-        </Link>
+        <Logo className="p-8" />
         
         <nav className="flex-1 px-4 flex flex-col gap-1 mt-4">
            {[
@@ -119,10 +117,7 @@ export function DashboardONG() {
          
          {/* Header */}
          <header className="h-16 lg:h-20 bg-white border-b border-graphite/5 px-4 lg:px-8 flex items-center justify-between sticky top-0 z-40">
-            <Link to="/" className="lg:hidden flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald text-white flex items-center justify-center font-bold text-sm">D</div>
-              <span className="font-display font-bold text-lg text-graphite-dark">Doa<span className="text-emerald">Hub</span></span>
-            </Link>
+            <Logo className="lg:hidden scale-90 origin-left" />
             <div className="hidden lg:flex items-center gap-4 bg-ice px-4 py-2 rounded-xl border border-graphite/5 w-full max-w-md">
                <Search className="w-4 h-4 text-graphite-light" />
                <input type="text" placeholder="Buscar doações, relatórios..." className="bg-transparent border-none outline-none text-sm font-medium w-full text-graphite-dark" />

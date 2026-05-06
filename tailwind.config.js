@@ -31,6 +31,7 @@ export default {
       fontFamily: {
         display: ['Manrope', 'sans-serif'],
         sans: ['Inter', 'sans-serif'],
+        brand: ['Poppins', 'sans-serif'],
       },
       borderRadius: {
         '4xl': '2rem',

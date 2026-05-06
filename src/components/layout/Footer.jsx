@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Heart } from 'lucide-react';
+import { Logo } from '../ui/Logo';
 import { HIDDEN_NAV_ROUTES } from '../../data/constants';
 
 const FOOTER_SECTIONS = [
@@ -37,12 +38,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Brand */}
         <div className="flex flex-col gap-3">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald text-white flex items-center justify-center">
-              <Heart className="w-4 h-4" />
-            </div>
-            <span className="font-display font-bold text-lg text-white">Doa<span className="text-emerald">Hub</span></span>
-          </Link>
+          <Logo light />
           <p className="text-sm leading-relaxed">Conectando doadores a propósitos reais com transparência e tecnologia.</p>
         </div>
 

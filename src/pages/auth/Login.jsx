@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, Code, Globe, ArrowLeft, Heart } from 'lucide-react';
+import { Logo } from '../../components/ui/Logo';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PremiumButton } from '../../components/ui/PremiumButton';
@@ -46,12 +47,7 @@ export function Login() {
         </div>
 
         <div className="relative z-10 w-full p-16 flex flex-col justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-white text-emerald flex items-center justify-center shadow-xl">
-              <Heart className="w-6 h-6 fill-current" />
-            </div>
-            <span className="font-display font-bold text-2xl text-white tracking-tight">Doa<span className="text-emerald-light">Hub</span></span>
-          </Link>
+          <Logo light />
 
           <div className="flex flex-col gap-6 max-w-md">
             <motion.h2 
@@ -83,9 +79,7 @@ export function Login() {
         >
           {/* Mobile Logo Only */}
           <div className="lg:hidden flex flex-col items-center gap-4 mb-2">
-            <div className="w-12 h-12 rounded-2xl bg-emerald text-white flex items-center justify-center shadow-lg shadow-emerald/30">
-              <Heart className="w-7 h-7" />
-            </div>
+            <Logo iconOnly className="scale-125" />
             <h1 className="text-2xl font-display font-bold text-graphite-dark tracking-tight">Bem-vindo de volta!</h1>
           </div>
 
