@@ -10,6 +10,7 @@ import {
   Search, 
   Bell,
   ShieldCheck,
+  Clock,
 } from 'lucide-react';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { NewCampaignModal } from '../../components/ui/NewCampaignModal';
@@ -101,7 +102,11 @@ export function DashboardONG() {
               <div className="flex flex-col">
                  <div className="flex items-center gap-1">
                    <span className="text-sm font-bold text-graphite-dark truncate max-w-[120px]">{orgProfile.name}</span>
-                   {orgProfile.isVerified && <ShieldCheck className="w-3.5 h-3.5 text-emerald" title="ONG Verificada" />}
+                   {orgProfile.isVerified 
+                     ? <ShieldCheck className="w-3.5 h-3.5 text-emerald" title="Verificada" />
+                     : orgProfile.verificationStatus === 'pending' 
+                       ? <Clock className="w-3.5 h-3.5 text-amber-500" title="Em Análise" /> 
+                       : null}
                  </div>
                  <span className="text-xs text-graphite-light font-medium">Ver Perfil Público</span>
               </div>

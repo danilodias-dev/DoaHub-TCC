@@ -90,7 +90,7 @@ export function OnboardingStep2() {
     }
 
     // All validations passed — proceed
-    updateOrgProfile({ isVerified: true });
+    updateOrgProfile({ isVerified: false, verificationStatus: 'pending' });
     navigate('/ong/onboarding/sucesso');
   };
 
