@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Upload, CheckCircle2, ChevronLeft, Shield, ArrowRight, File, XCircle, AlertTriangle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -22,6 +22,7 @@ export function OnboardingStep2() {
   const [errors, setErrors] = useState({ estatuto: null, ata: null, comprovante: null });
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
+  const [fileError, setFileError] = useState(false);
 
   // Refs for hidden file inputs
   const inputRefs = {
@@ -73,21 +74,31 @@ export function OnboardingStep2() {
 
   const allUploaded = files.estatuto && files.ata && files.comprovante;
 
+  useEffect(() => {
+    if (allUploaded) {
+      setFileError(false);
+    }
+  }, [allUploaded]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    let hasError = false;
+
+    if (!allUploaded) {
+      setFileError(true);
+      hasError = true;
+    }
 
     // Primary blocking criterion: terms must be accepted
     if (!termsAccepted) {
       setTermsError(true);
+      hasError = true;
       // Scroll to terms section for visibility
       document.getElementById('terms-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
     }
 
-    // Secondary check: all files must be uploaded
-    if (!allUploaded) {
-      return;
-    }
+    if (hasError) return;
 
     // All validations passed — proceed
     updateOrgProfile({ isVerified: false, verificationStatus: 'pending' });
@@ -313,6 +324,23 @@ export function OnboardingStep2() {
             </p>
           </div>
 
+          {/* File Error Alert */}
+          <AnimatePresence>
+            {fileError && !allUploaded && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="mt-6 flex items-start gap-3 p-4 rounded-xl bg-[#FEF2F2] border border-[#FEE2E2]"
+              >
+                <AlertTriangle className="w-5 h-5 text-[#991B1B] flex-shrink-0 mt-0.5" />
+                <p className="text-sm font-semibold text-[#991B1B]">
+                  É obrigatório anexar todos os documentos solicitados para prosseguir com o envio da documentação.
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Actions */}
           <div className="flex items-center justify-between mt-10 pt-8 border-t border-graphite/5">
             <Link to="/ong/onboarding/1" className="flex items-center gap-1 font-medium text-graphite-light hover:text-emerald transition-colors">
@@ -321,7 +349,6 @@ export function OnboardingStep2() {
             <PremiumButton 
               size="lg" 
               onClick={handleSubmit}
-              disabled={!allUploaded}
               className={`px-10 gap-2 ${allUploaded && !termsAccepted ? 'ring-2 ring-red-300/50' : ''}`}
             >
               Enviar para Análise <ArrowRight className="w-5 h-5" />
