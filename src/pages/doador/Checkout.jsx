@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, ChevronLeft, Lock, QrCode, Copy } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PremiumButton } from '../../components/ui/PremiumButton';
+import { Logo } from '../../components/ui/Logo';
 import { motionTokens } from '../../utils/motion';
 
 export function Checkout() {
@@ -44,7 +45,8 @@ export function Checkout() {
           
           <div className="flex items-center gap-2">
             <Lock className="w-4 h-4 text-emerald"/>
-            <span className="font-bold text-graphite text-xs uppercase tracking-wider">DoaHub Checkout</span>
+            <Logo className="scale-75 origin-right" />
+            <span className="font-bold text-graphite text-xs uppercase tracking-wider ml-1">Checkout</span>
           </div>
         </div>
       </header>

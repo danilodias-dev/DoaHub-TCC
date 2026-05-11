@@ -19,8 +19,9 @@ export function Logo({ className = "", iconOnly = false, light = false, to = "/"
       </div>
       
       {!iconOnly && (
-        <span className={`font-brand font-bold text-xl md:text-2xl tracking-tight transition-colors ${light ? 'text-white' : 'text-emerald'}`}>
-          DoaHub
+        <span className="font-brand font-bold text-xl md:text-2xl tracking-tight transition-colors flex items-center">
+          <span className={light ? 'text-white' : 'text-graphite-dark'}>Doa</span>
+          <span className="text-emerald">Hub</span>
         </span>
       )}
     </div>
