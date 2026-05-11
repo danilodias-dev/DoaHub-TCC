@@ -12,9 +12,9 @@ import { DollarSign, Megaphone, Users, TrendingUp, CheckCircle2, FileText, Spark
  */
 
 const INITIAL_CAMPAIGNS = [
-  { id: 1, title: 'Alimentação Sertão PE', status: 'Ativa', raised: 42500, goal: 50000, donors: 312, category: 'Alimentação', description: 'Distribuição de cestas básicas para famílias em situação de vulnerabilidade no sertão pernambucano.' },
-  { id: 2, title: 'Reforma Escola Comunitária', status: 'Ativa', raised: 15000, goal: 30000, donors: 145, category: 'Educação', description: 'Reforma completa da infraestrutura da escola comunitária do bairro Santo Amaro.' },
-  { id: 3, title: 'Kit Escolar 2024', status: 'Finalizada', raised: 22000, goal: 20000, donors: 210, category: 'Educação', description: 'Distribuição de kits escolares completos para crianças carentes.' },
+  { id: 1, title: 'Alimentação Sertão PE', status: 'Ativa', raised: 42500, goal: 50000, donors: 312, category: 'Alimentação', description: 'Distribuição de cestas básicas para famílias em situação de vulnerabilidade no sertão pernambucano.', launchDate: '2026-04-21T00:00:00Z', deadline: '2026-05-21T00:00:00Z' },
+  { id: 2, title: 'Reforma Escola Comunitária', status: 'Ativa', raised: 15000, goal: 30000, donors: 145, category: 'Educação', description: 'Reforma completa da infraestrutura da escola comunitária do bairro Santo Amaro.', launchDate: '2026-04-11T00:00:00Z', deadline: '2026-05-16T00:00:00Z' },
+  { id: 3, title: 'Kit Escolar 2024', status: 'Finalizada', raised: 22000, goal: 20000, donors: 210, category: 'Educação', description: 'Distribuição de kits escolares completos para crianças carentes.', launchDate: '2026-02-01T00:00:00Z', deadline: '2026-03-01T00:00:00Z' },
 ];
 
 const INITIAL_ACTIVITY = [

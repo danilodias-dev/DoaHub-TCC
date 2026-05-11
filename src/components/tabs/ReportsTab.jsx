@@ -16,6 +16,8 @@ import {
   ChevronDown,
   BarChart3,
   X,
+  Target,
+  AlertTriangle,
 } from 'lucide-react';
 import { useCampaigns } from '../../context/CampaignContext';
 
@@ -126,6 +128,42 @@ export const ReportsTab = memo(function ReportsTab() {
 
   const activeChart = chartConfig[chartType];
 
+  // ─── Predictive Impact Engine ──────────
+  const predictiveAnalysis = useMemo(() => {
+    const now = new Date();
+    
+    return campaigns
+      .filter(c => c.status === 'Ativa' && c.launchDate && c.deadline)
+      .map(c => {
+        const launch = new Date(c.launchDate);
+        const deadline = new Date(c.deadline);
+        
+        const daysSinceLaunch = Math.max(1, (now - launch) / (1000 * 60 * 60 * 24));
+        const daysUntilDeadline = (deadline - now) / (1000 * 60 * 60 * 24);
+        
+        const dailyVelocity = c.raised / daysSinceLaunch;
+        const remainingGoal = Math.max(0, c.goal - c.raised);
+        
+        const projectedDaysRemaining = remainingGoal / Math.max(0.01, dailyVelocity);
+        
+        // Critical Rule: If goal reached, never underperforming
+        const isGoalReached = c.raised >= c.goal;
+        const isUnderperforming = !isGoalReached && (projectedDaysRemaining > daysUntilDeadline);
+        
+        const percentage = Math.min(100, Math.round((c.raised / c.goal) * 100));
+
+        return {
+          ...c,
+          dailyVelocity,
+          remainingGoal,
+          daysUntilDeadline,
+          isGoalReached,
+          isUnderperforming,
+          percentage
+        };
+      });
+  }, [campaigns]);
+
   return (
     <>
       {/* Header */}
@@ -169,6 +207,74 @@ export const ReportsTab = memo(function ReportsTab() {
           </motion.div>
         ))}
       </div>
+
+      {/* ────────────── Predictive Insights Engine ────────────── */}
+      {predictiveAnalysis.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-graphite/5 mt-4 mb-4"
+        >
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
+              <Target className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-display font-bold text-xl text-graphite-dark">Previsão de Campanhas Ativas</h3>
+              <p className="text-xs text-graphite-light font-medium">Análise preditiva de velocidade de arrecadação</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-8">
+            {predictiveAnalysis.map(campaign => (
+              <div key={campaign.id} className="flex flex-col gap-3">
+                <div className="flex justify-between items-end">
+                  <div>
+                    <h4 className="text-sm font-bold text-graphite-dark">{campaign.title}</h4>
+                    <p className="text-[11px] text-graphite-light font-medium mt-0.5">
+                      Faltam {Math.max(0, Math.ceil(campaign.daysUntilDeadline))} dias
+                    </p>
+                  </div>
+                  <span className={`text-sm font-display font-black ${campaign.isUnderperforming ? 'text-amber-500' : 'text-emerald'}`}>
+                    {campaign.percentage}%
+                  </span>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="h-2.5 w-full bg-ice rounded-full overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${campaign.percentage}%` }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                    className={`h-full rounded-full ${campaign.isUnderperforming ? 'bg-amber-500' : 'bg-emerald'}`}
+                  />
+                </div>
+
+                {/* Alert Card */}
+                {campaign.isUnderperforming && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-amber-50/80 rounded-2xl p-4 border border-amber-200/50 flex gap-4 mt-2"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                      <AlertTriangle className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-amber-900">Atenção: Tendência de Baixa</span>
+                      <p className="text-[11px] text-amber-700/80 font-medium leading-relaxed mt-1">
+                        A arrecadação diária média está em <strong className="text-amber-800">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(campaign.dailyVelocity)}</strong>. 
+                        Mantendo esse ritmo, a meta não será atingida no prazo. Sugerimos compartilhar esta campanha no WhatsApp para aumentar o alcance.
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* ────────────── Gráfico de Impacto ────────────── */}
       <motion.div
