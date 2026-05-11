@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Heart, Award, TrendingUp, Calendar, ChevronRight, Star, Flame, Shield, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MOCK_IMPACT_STATS, MOCK_BADGES, MOCK_DONATIONS } from '../../data/mockData';
+import { motionTokens } from '../../utils/motion';
 
 export function Historico() {
   const pageVariants = {
@@ -16,7 +17,7 @@ export function Historico() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.5 }}
+      transition={motionTokens.page}
       className="min-h-screen bg-ice pb-24"
     >
       <div className="h-20"></div>
@@ -51,7 +52,7 @@ export function Historico() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              className="bg-white rounded-[2rem] p-6 border border-graphite/5 flex items-center gap-5 shadow-sm hover:shadow-lg hover:shadow-emerald/5 transition-all duration-500"
+              className="bg-white rounded-[2rem] p-6 border border-graphite/5 flex items-center gap-5 shadow-sm hover:shadow-lg hover:shadow-emerald/5 transition-all duration-page"
             >
               <div className="w-14 h-14 rounded-2xl bg-emerald/5 text-emerald flex items-center justify-center">
                 <s.icon className="w-7 h-7" />
@@ -71,7 +72,7 @@ export function Historico() {
             {MOCK_BADGES.map((b, idx) => (
               <div 
                 key={idx}
-                className={`bg-white rounded-2xl p-5 border flex flex-col items-center text-center gap-3 transition-all duration-300 ${b.earned ? 'border-emerald/20 hover:shadow-lg hover:shadow-emerald/10 hover:-translate-y-1' : 'border-graphite/5 opacity-40 grayscale'}`}
+                className={`bg-white rounded-2xl p-5 border flex flex-col items-center text-center gap-3 transition-all duration-default ${b.earned ? 'border-emerald/20 hover:shadow-lg hover:shadow-emerald/10 hover:-translate-y-1' : 'border-graphite/5 opacity-40 grayscale'}`}
               >
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${b.earned ? 'bg-emerald/10 text-emerald' : 'bg-ice text-graphite-light'}`}>
                   <b.icon className="w-6 h-6" />

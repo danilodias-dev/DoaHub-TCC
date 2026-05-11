@@ -16,6 +16,7 @@ import {
 import { useCampaigns } from '../../context/CampaignContext';
 import { ActivityFeedModal } from '../ui/ActivityFeedModal';
 import { downloadDonationReceipt } from '../../utils/receiptGenerator';
+import { motionTokens } from '../../utils/motion';
 
 /**
  * ============================================
@@ -192,7 +193,7 @@ export const DashboardTab = memo(function DashboardTab() {
           <motion.div
             key={s.title}
             variants={fadeUp}
-            className="bg-white rounded-[2rem] p-6 shadow-sm border border-graphite/5 flex flex-col gap-4 group hover:shadow-xl hover:shadow-emerald/5 transition-all duration-500"
+            className="bg-white rounded-[2rem] p-6 shadow-sm border border-graphite/5 flex flex-col gap-4 group hover:shadow-xl hover:shadow-emerald/5 transition-all duration-page"
           >
             <div className="flex items-center justify-between">
               <div className="w-12 h-12 rounded-2xl bg-emerald/5 text-emerald flex items-center justify-center font-bold">
@@ -210,7 +211,7 @@ export const DashboardTab = memo(function DashboardTab() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.3 }}
+                  transition={motionTokens.default}
                   className="text-2xl font-display font-extrabold text-graphite-dark"
                 >
                   {s.value}
@@ -274,7 +275,7 @@ export const DashboardTab = memo(function DashboardTab() {
                             className={`h-full rounded-full ${isActive ? 'bg-emerald' : 'bg-graphite-light'}`}
                             initial={{ width: 0 }}
                             animate={{ width: `${perc}%` }}
-                            transition={{ duration: 0.8, ease: 'easeOut', delay: idx * 0.1 }}
+                            transition={{ ...motionTokens.slow, ease: 'easeOut', delay: idx * 0.1 }}
                           />
                         </div>
                         <span className={`text-xs font-bold ${perc >= 100 ? 'text-emerald' : 'text-graphite-light'}`}>
@@ -399,7 +400,7 @@ export const DashboardTab = memo(function DashboardTab() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
+                  transition={motionTokens.default}
                   className="relative z-10 w-full"
                 >
                   <div className="absolute top-0 right-0 opacity-5 -mr-4 -mt-4 pointer-events-none">
@@ -435,7 +436,7 @@ export const DashboardTab = memo(function DashboardTab() {
                         setCurrentTipIndex(idx);
                         setManualNavTrigger(prev => prev + 1);
                       }}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                      className={`h-1.5 rounded-full transition-all duration-default ${
                         idx === safeIndex ? 'bg-emerald w-4' : 'bg-graphite/10 hover:bg-graphite/20 w-1.5'
                       }`}
                       aria-label={`Ir para a dica ${idx + 1}`}

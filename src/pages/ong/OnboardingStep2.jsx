@@ -4,6 +4,7 @@ import { FileText, Upload, CheckCircle2, ChevronLeft, Shield, ArrowRight, File, 
 import { Link, useNavigate } from 'react-router-dom';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { useCampaigns } from '../../context/CampaignContext';
+import { motionTokens } from '../../utils/motion';
 
 const ACCEPTED_TYPES = [
   'application/pdf',
@@ -15,10 +16,22 @@ const ACCEPTED_TYPES = [
 const ACCEPTED_EXTENSIONS = '.pdf,.png,.jpg,.jpeg,.webp';
 const MAX_FILE_SIZE_MB = 10;
 
+const STEPS = [
+  { id: 1, label: 'Dados da ONG', path: '/ong/onboarding/1' },
+  { id: 2, label: 'Documentação', path: '/ong/onboarding/2' },
+  { id: 3, label: 'Aprovação', path: '/ong/onboarding/sucesso' }
+];
+
+let cachedFiles = { estatuto: null, ata: null, comprovante: null };
+
 export function OnboardingStep2() {
   const navigate = useNavigate();
   const { updateOrgProfile } = useCampaigns();
-  const [files, setFiles] = useState({ estatuto: null, ata: null, comprovante: null });
+  const [files, setFiles] = useState(cachedFiles);
+
+  useEffect(() => {
+    cachedFiles = files;
+  }, [files]);
   const [errors, setErrors] = useState({ estatuto: null, ata: null, comprovante: null });
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
@@ -127,24 +140,35 @@ export function OnboardingStep2() {
 
         {/* Progress Indicator */}
         <div className="flex items-center justify-center gap-3 mb-12">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-emerald text-white flex items-center justify-center font-bold text-sm">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
-            <span className="hidden md:block text-sm font-bold text-emerald">Dados da ONG</span>
-          </div>
-          <div className="w-12 h-0.5 bg-emerald"></div>
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-emerald text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-emerald/30">2</div>
-            <span className="hidden md:block text-sm font-bold text-emerald">Documentação</span>
-          </div>
-          <div className="w-12 h-0.5 bg-graphite/10"></div>
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-graphite/10 text-graphite-light flex items-center justify-center font-bold text-sm">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
-            <span className="hidden md:block text-sm font-medium text-graphite-light">Aprovação</span>
-          </div>
+          {STEPS.map((step, index) => {
+            const isCompleted = index < 1; // currentStep is 2
+            const isCurrent = index === 1;
+
+            return (
+              <div key={step.id} className="flex items-center gap-3">
+                <div 
+                  onClick={() => isCompleted && navigate(step.path)}
+                  className={`flex items-center gap-2 ${isCompleted ? 'cursor-pointer hover:opacity-70 transition-opacity' : 'pointer-events-none'}`}
+                >
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
+                    isCompleted ? 'bg-emerald text-white' : 
+                    isCurrent ? 'bg-emerald text-white shadow-lg shadow-emerald/30' : 
+                    'bg-graphite/10 text-graphite-light'
+                  }`}>
+                    {isCompleted || (step.id === 3 && isCurrent) ? <CheckCircle2 className="w-5 h-5" /> : step.id}
+                  </div>
+                  <span className={`hidden md:block text-sm font-bold ${
+                    isCompleted || isCurrent ? 'text-emerald' : 'text-graphite-light font-medium'
+                  }`}>
+                    {step.label}
+                  </span>
+                </div>
+                {index < STEPS.length - 1 && (
+                  <div className={`w-12 h-0.5 ${isCompleted ? 'bg-emerald' : 'bg-graphite/10'}`}></div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Form Card */}
@@ -302,7 +326,7 @@ export function OnboardingStep2() {
                   initial={{ opacity: 0, y: -8, height: 0 }}
                   animate={{ opacity: 1, y: 0, height: 'auto' }}
                   exit={{ opacity: 0, y: -8, height: 0 }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                  transition={{ ...motionTokens.default, ease: 'easeOut' }}
                   className="overflow-hidden"
                 >
                   <div className="flex items-center gap-2 mt-3 ml-1 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">

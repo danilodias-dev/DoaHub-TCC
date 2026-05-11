@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { CheckCircle2, ChevronRight, Share2, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motionTokens } from '../../utils/motion';
 
 export function Obrigado() {
   const pageVariants = {
@@ -15,7 +16,7 @@ export function Obrigado() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.6, type: "spring" }}
+      transition={{ ...motionTokens.slow, type: "spring" }}
       className="min-h-screen bg-ice flex items-center justify-center p-6 relative overflow-hidden"
     >
       
@@ -26,7 +27,7 @@ export function Obrigado() {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
+        transition={motionTokens.page}
         className="w-full max-w-lg bg-white rounded-[2rem] p-10 flex flex-col items-center text-center shadow-2xl relative z-10 border border-white"
       >
         <motion.div 
@@ -69,7 +70,7 @@ export function Obrigado() {
 
       <motion.div
          animate={{ y: [0, -10, 0] }}
-         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+         transition={{ ...motionTokens.slow, repeat: Infinity, ease: "easeInOut" }}
          className="absolute top-12 right-12 text-emerald/30 hidden md:block"
       >
         <Sparkles className="w-12 h-12" />

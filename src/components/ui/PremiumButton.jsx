@@ -15,7 +15,7 @@ export function PremiumButton({
   ...props
 }) {
   
-  const baseStyles = "inline-flex items-center justify-center gap-2 font-medium transition-all duration-300 rounded-full active:scale-95";
+  const baseStyles = "inline-flex items-center justify-center gap-2 font-medium transition-all duration-default rounded-full active:scale-95";
   
   const variants = {
     solid: "bg-emerald text-white hover:bg-emerald-light shadow-lg shadow-emerald/30",

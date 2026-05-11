@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronDown, Heart, ShieldCheck, CreditCard, Users, MessageCircle, HelpCircle } from 'lucide-react';
 import { useState } from 'react';
 import { PremiumButton } from '../../components/ui/PremiumButton';
+import { motionTokens } from '../../utils/motion';
 
 const faqData = [
   {
@@ -41,7 +42,7 @@ function AccordionItem({ question, answer }) {
         className="w-full py-6 flex items-center justify-between text-left group"
       >
         <span className={`text-lg font-bold transition-colors ${isOpen ? 'text-emerald' : 'text-graphite-dark group-hover:text-emerald'}`}>{question}</span>
-        <ChevronDown className={`w-5 h-5 text-graphite-light transition-transform duration-300 ${isOpen ? 'rotate-180 text-emerald' : ''}`} />
+        <ChevronDown className={`w-5 h-5 text-graphite-light transition-transform duration-default ${isOpen ? 'rotate-180 text-emerald' : ''}`} />
       </button>
       <AnimatePresence>
         {isOpen && (
@@ -49,7 +50,7 @@ function AccordionItem({ question, answer }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ ...motionTokens.default, ease: "easeInOut" }}
             className="overflow-hidden"
           >
             <p className="pb-6 text-graphite-light font-medium leading-relaxed">
@@ -77,7 +78,7 @@ export function Ajuda() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.5 }}
+      transition={motionTokens.page}
       className="flex flex-col w-full"
     >
       

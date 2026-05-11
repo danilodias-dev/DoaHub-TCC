@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Search, Download, Filter, Heart, ExternalLink, Calendar, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
 import { MOCK_DONATIONS } from '../../data/mockData';
+import { motionTokens } from '../../utils/motion';
 
 export function MinhasDoacoes() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,7 +19,7 @@ export function MinhasDoacoes() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.5 }}
+      transition={motionTokens.page}
       className="min-h-screen bg-ice pt-24 pb-20 px-6"
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-8">

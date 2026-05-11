@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, X } from 'lucide-react';
+import { motionTokens } from '../../utils/motion';
 
 /**
  * ============================================
@@ -35,7 +36,7 @@ export function Toast({ notification, onDismiss }) {
                 className="h-0.5 bg-emerald/30 rounded-full mt-3"
                 initial={{ width: '100%' }}
                 animate={{ width: '0%' }}
-                transition={{ duration: 5, ease: 'linear' }}
+                transition={{ ...motionTokens.slow, ease: 'linear' }}
               />
             </div>
 

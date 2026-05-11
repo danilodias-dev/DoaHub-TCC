@@ -4,6 +4,7 @@ import { Search, Grid, List } from 'lucide-react';
 import { useState } from 'react';
 import { CampaignCard } from '../../components/ui/CampaignCard';
 import { MOCK_CAMPAIGNS } from '../../data/mockData';
+import { motionTokens } from '../../utils/motion';
 
 export function ExplorarCampanhas() {
   const [filter, setFilter] = useState('all');
@@ -29,7 +30,7 @@ export function ExplorarCampanhas() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.5 }}
+      transition={motionTokens.page}
       className="min-h-screen bg-ice pt-24 pb-20 px-6"
     >
       <div className="max-w-7xl mx-auto flex flex-col gap-8">

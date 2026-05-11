@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { HeartHandshake, Globe2, ShieldCheck, ArrowRight, CheckCircle2, Users, Building2, TrendingUp } from 'lucide-react';
+import { motionTokens } from '../../utils/motion';
 
 export function Landing() {
   const pageVariants = {
@@ -29,7 +30,7 @@ export function Landing() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.5 }}
+      transition={motionTokens.page}
       className="w-full flex-col flex overflow-hidden"
     >
       
@@ -46,7 +47,7 @@ export function Landing() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ ...motionTokens.slow, ease: "easeOut" }}
             className="glass-dark rounded-full px-5 py-2 mb-8 flex items-center gap-2"
           >
             <span className="w-2 h-2 rounded-full bg-glow animate-pulse"></span>
@@ -56,7 +57,7 @@ export function Landing() {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
+            transition={{ ...motionTokens.slow, delay: 0.1 }}
             className="text-5xl md:text-7xl font-display font-extrabold text-white mb-6 tracking-tight leading-tight"
           >
             Sua doação com impacto<br/> <span className="text-glow">real</span> e <span className="text-emerald-light">rastreável</span>
@@ -65,7 +66,7 @@ export function Landing() {
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.2 }}
+            transition={{ ...motionTokens.slow, delay: 0.2 }}
             className="text-lg md:text-xl text-ice-dark max-w-2xl mb-10"
           >
             O DoaHub avalia rigorosamente e conecta ONGs confiáveis a doadores exigentes, entregando rastreabilidade total a cada centavo.
@@ -74,7 +75,7 @@ export function Landing() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ ...motionTokens.slow, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-4"
           >
             <Link to="/explorar">
@@ -110,7 +111,7 @@ export function Landing() {
                 transition={{ delay: i * 0.1 }}
                 className="flex flex-col items-center text-center gap-4 group"
               >
-                <div className="w-16 h-16 rounded-2xl bg-emerald/10 text-emerald flex items-center justify-center mb-2 group-hover:bg-emerald group-hover:text-white transition-all duration-300">
+                <div className="w-16 h-16 rounded-2xl bg-emerald/10 text-emerald flex items-center justify-center mb-2 group-hover:bg-emerald group-hover:text-white transition-all duration-default">
                   <feature.icon className="w-8 h-8" />
                 </div>
                 <h3 className="font-display font-bold text-xl text-graphite-dark">{feature.title}</h3>
@@ -132,7 +133,7 @@ export function Landing() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="flex flex-col items-center text-center p-8 bg-white rounded-[2.5rem] shadow-sm border border-graphite/5 hover:shadow-xl hover:shadow-emerald/5 hover:-translate-y-1 transition-all duration-500"
+                className="flex flex-col items-center text-center p-8 bg-white rounded-[2.5rem] shadow-sm border border-graphite/5 hover:shadow-xl hover:shadow-emerald/5 hover:-translate-y-1 transition-all duration-page"
               >
                 <div className="w-16 h-16 rounded-2xl bg-emerald/5 flex items-center justify-center mb-4">
                   <stat.icon className="w-8 h-8 text-emerald" />

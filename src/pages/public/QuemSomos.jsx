@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Heart, ShieldCheck, Globe2, Target, Zap } from 'lucide-react';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { Link } from 'react-router-dom';
+import { motionTokens } from '../../utils/motion';
 
 export function QuemSomos() {
   const pageVariants = {
@@ -22,7 +23,7 @@ export function QuemSomos() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.5 }}
+      transition={motionTokens.page}
       className="flex flex-col w-full overflow-hidden"
     >
       
@@ -64,7 +65,7 @@ export function QuemSomos() {
               <img 
                 src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&auto=format&fit=crop" 
                 alt="Impacto Social" 
-                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-slow"
               />
             </div>
             {/* Floating Element */}
@@ -122,9 +123,9 @@ export function QuemSomos() {
               <motion.div 
                 key={i}
                 whileHover={{ y: -10 }}
-                className="bg-white border border-graphite/5 p-10 rounded-[3rem] shadow-sm flex flex-col items-center text-center gap-6 group hover:shadow-2xl hover:shadow-emerald/5 transition-all duration-500"
+                className="bg-white border border-graphite/5 p-10 rounded-[3rem] shadow-sm flex flex-col items-center text-center gap-6 group hover:shadow-2xl hover:shadow-emerald/5 transition-all duration-page"
               >
-                <div className="w-20 h-20 rounded-3xl bg-emerald/5 text-emerald flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                <div className="w-20 h-20 rounded-3xl bg-emerald/5 text-emerald flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-page">
                   <v.icon className="w-10 h-10" />
                 </div>
                 <div className="flex flex-col gap-3">

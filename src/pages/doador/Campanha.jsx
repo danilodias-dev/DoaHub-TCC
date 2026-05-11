@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Users, Heart, Share2, CheckCircle2, ChevronLeft, Calendar, ShieldCheck } from 'lucide-react';
 import { PremiumButton } from '../../components/ui/PremiumButton';
+import { motionTokens } from '../../utils/motion';
 
 export function Campanha() {
   const { id } = useParams();
@@ -36,7 +37,7 @@ export function Campanha() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.5 }}
+      transition={motionTokens.page}
       className="w-full min-h-screen bg-ice pb-24"
     >
       
@@ -49,8 +50,8 @@ export function Campanha() {
           <ChevronLeft className="w-5 h-5" /> Voltar ao Marketplace
         </Link>
         <div className="flex gap-2">
-           <button className="w-10 h-10 rounded-full glass flex items-center justify-center text-graphite-light hover:text-emerald ease-out duration-300"><Share2 className="w-4 h-4"/></button>
-           <button className="w-10 h-10 rounded-full glass flex items-center justify-center text-graphite-light hover:text-red-500 ease-out duration-300"><Heart className="w-4 h-4"/></button>
+           <button className="w-10 h-10 rounded-full glass flex items-center justify-center text-graphite-light hover:text-emerald ease-out duration-default"><Share2 className="w-4 h-4"/></button>
+           <button className="w-10 h-10 rounded-full glass flex items-center justify-center text-graphite-light hover:text-red-500 ease-out duration-default"><Heart className="w-4 h-4"/></button>
         </div>
       </div>
 
@@ -142,7 +143,7 @@ export function Campanha() {
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercentage}%` }}
-                  transition={{ duration: 1, ease: 'easeOut', delay: 0.3 }}
+                  transition={{ ...motionTokens.slow, ease: 'easeOut', delay: 0.3 }}
                   className="h-full bg-emerald relative"
                 >
                   <div className="absolute inset-0 bg-white/20 animate-pulse"></div>

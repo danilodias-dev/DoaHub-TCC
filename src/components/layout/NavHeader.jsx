@@ -47,7 +47,7 @@ export function NavHeader() {
 
           <div className="flex items-center gap-3">
             <Link to="/login" className="hidden md:block font-medium text-graphite hover:text-emerald transition-colors">Entrar</Link>
-            <Link to="/cadastro" className="hidden md:inline-flex px-5 py-2.5 bg-graphite-dark text-white rounded-full font-medium hover:bg-emerald transition-all duration-300 shadow-md text-sm">
+            <Link to="/cadastro" className="hidden md:inline-flex px-5 py-2.5 bg-graphite-dark text-white rounded-full font-medium hover:bg-emerald transition-all duration-default shadow-md text-sm">
               Cadastre-se
             </Link>
             {/* Hamburger Mobile */}
@@ -89,7 +89,7 @@ export function NavHeader() {
                   <Link 
                     key={link.to} 
                     to={link.to} 
-                    className={`px-4 py-3.5 rounded-2xl font-medium transition-all duration-300 ${
+                    className={`px-4 py-3.5 rounded-2xl font-medium transition-all duration-default ${
                       pathname === link.to 
                         ? 'bg-emerald text-white shadow-lg shadow-emerald/20' 
                         : 'text-graphite hover:bg-emerald/5 hover:text-emerald'

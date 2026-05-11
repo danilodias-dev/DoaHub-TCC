@@ -32,7 +32,7 @@
     @apply backdrop-blur-md bg-graphite/80 border border-white/10 text-white shadow-xl;
   }
   .animate-lift {
-    @apply transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald/20;
+    @apply transition-all duration-slow ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald/20;
   }
   .page-enter {
     animation: pageEnter 0.4s ease-out both;

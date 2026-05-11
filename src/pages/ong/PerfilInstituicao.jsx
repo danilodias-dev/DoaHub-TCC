@@ -3,6 +3,7 @@ import { Mail, Globe, MapPin, CheckCircle2, ShieldCheck, Heart, Megaphone, FileT
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { CampaignCard } from '../../components/ui/CampaignCard';
 import { useCampaigns } from '../../context/CampaignContext';
+import { motionTokens } from '../../utils/motion';
 
 export function PerfilInstituicao() {
   const { campaigns, orgProfile } = useCampaigns();
@@ -19,7 +20,7 @@ export function PerfilInstituicao() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.6 }}
+      transition={motionTokens.slow}
       className="flex flex-col w-full"
     >
       

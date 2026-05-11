@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Eye, TrendingUp, ArrowUpRight, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MOCK_GLOBAL_STATS, MOCK_AUDIT_LOG, MOCK_PILLARS } from '../../data/mockData';
+import { motionTokens } from '../../utils/motion';
 
 export function Transparencia() {
   const pageVariants = {
@@ -16,7 +17,7 @@ export function Transparencia() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.5 }}
+      transition={motionTokens.page}
       className="min-h-screen bg-ice pb-24"
     >
       <div className="h-20"></div>
@@ -52,7 +53,7 @@ export function Transparencia() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="bg-white rounded-[2rem] p-6 shadow-xl shadow-graphite/5 border border-graphite/5 text-center flex flex-col items-center gap-2 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500"
+              className="bg-white rounded-[2rem] p-6 shadow-xl shadow-graphite/5 border border-graphite/5 text-center flex flex-col items-center gap-2 hover:shadow-2xl hover:-translate-y-1 transition-all duration-page"
             >
               <div className="w-12 h-12 rounded-2xl bg-emerald/10 text-emerald flex items-center justify-center">
                 <s.icon className="w-6 h-6" />
@@ -69,8 +70,8 @@ export function Transparencia() {
           <h2 className="text-3xl font-display font-bold text-graphite-dark mb-8 text-center">Os 4 Pilares da Confiança</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {MOCK_PILLARS.map((p, idx) => (
-              <div key={idx} className="bg-white rounded-[2rem] p-8 border border-graphite/5 flex gap-5 hover:shadow-lg hover:shadow-emerald/5 transition-all duration-500 group">
-                <div className="w-14 h-14 rounded-2xl bg-emerald/5 text-emerald flex items-center justify-center flex-shrink-0 group-hover:bg-emerald group-hover:text-white transition-colors duration-300">
+              <div key={idx} className="bg-white rounded-[2rem] p-8 border border-graphite/5 flex gap-5 hover:shadow-lg hover:shadow-emerald/5 transition-all duration-page group">
+                <div className="w-14 h-14 rounded-2xl bg-emerald/5 text-emerald flex items-center justify-center flex-shrink-0 group-hover:bg-emerald group-hover:text-white transition-colors duration-default">
                   <p.icon className="w-7 h-7" />
                 </div>
                 <div>

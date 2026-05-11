@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { PremiumButton } from '../ui/PremiumButton';
 import { useCampaigns } from '../../context/CampaignContext';
+import { motionTokens } from '../../utils/motion';
 
 /**
  * ============================================
@@ -134,7 +135,7 @@ export const CampaignsTab = memo(function CampaignsTab({ onOpenModal }) {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                transition={{ duration: 0.3 }}
+                transition={motionTokens.default}
                 className={`bg-white rounded-[2rem] shadow-sm border overflow-hidden flex flex-col transition-all ${
                   isDeleting
                     ? 'border-red-200 shadow-red-100/50'
@@ -273,7 +274,7 @@ export const CampaignsTab = memo(function CampaignsTab({ onOpenModal }) {
                             className={`h-full rounded-full ${isActive ? 'bg-emerald' : 'bg-graphite-light'}`}
                             initial={{ width: 0 }}
                             animate={{ width: `${perc}%` }}
-                            transition={{ duration: 0.8, ease: 'easeOut' }}
+                            transition={{ ...motionTokens.slow, ease: 'easeOut' }}
                           />
                         </div>
                         <span className={`text-xs font-bold min-w-[2.5rem] text-right ${perc >= 100 ? 'text-emerald' : 'text-graphite-light'}`}>

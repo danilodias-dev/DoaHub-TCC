@@ -37,6 +37,12 @@ export default {
         '4xl': '2rem',
         '5xl': '2.5rem',
       },
+      transitionDuration: {
+        'fast': '150ms',
+        'default': '250ms',
+        'page': '400ms',
+        'slow': '800ms',
+      },
     },
   },
   plugins: [],

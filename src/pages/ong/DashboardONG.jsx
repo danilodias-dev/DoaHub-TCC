@@ -23,6 +23,7 @@ import { ReportsTab } from '../../components/tabs/ReportsTab';
 import { SettingsTab } from '../../components/tabs/SettingsTab';
 import { useCampaigns, useNotification } from '../../context/CampaignContext';
 import { useMemo } from 'react';
+import { motionTokens } from '../../utils/motion';
 
 export function DashboardONG() {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ export function DashboardONG() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.4 }}
+      transition={motionTokens.page}
       className="min-h-screen bg-ice flex"
     >
       

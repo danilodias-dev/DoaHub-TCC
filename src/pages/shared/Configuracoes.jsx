@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { User, Shield, Bell, CreditCard, Camera, Lock, Check, Save } from 'lucide-react';
 import { useState } from 'react';
 import { PremiumButton } from '../../components/ui/PremiumButton';
+import { motionTokens } from '../../utils/motion';
 
 export function Configuracoes() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -31,7 +32,7 @@ export function Configuracoes() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.5 }}
+      transition={motionTokens.page}
       className="min-h-screen bg-ice pt-24 pb-20 px-6"
     >
       <div className="max-w-5xl mx-auto flex flex-col gap-8">
@@ -79,7 +80,7 @@ export function Configuracoes() {
 
             {/* TAB: Profile */}
             {activeTab === 'profile' && (
-              <div className="flex flex-col gap-8 animate-in fade-in duration-500">
+              <div className="flex flex-col gap-8 animate-in fade-in duration-page">
                 <div className="flex flex-col md:flex-row items-center gap-8">
                   <div className="relative group">
                     <div className="w-32 h-32 rounded-full bg-ice border-4 border-white shadow-xl overflow-hidden">
@@ -119,7 +120,7 @@ export function Configuracoes() {
 
             {/* TAB: Security */}
             {activeTab === 'security' && (
-              <div className="flex flex-col gap-8 animate-in slide-in-from-right duration-500">
+              <div className="flex flex-col gap-8 animate-in slide-in-from-right duration-page">
                 <div className="bg-orange/5 border border-orange/10 p-6 rounded-2xl flex gap-4 items-start mb-2">
                   <div className="p-2 bg-orange/10 rounded-xl text-orange">
                     <Lock className="w-6 h-6" />
@@ -149,7 +150,7 @@ export function Configuracoes() {
 
             {/* TAB: Notifications */}
             {activeTab === 'notifications' && (
-              <div className="flex flex-col gap-6 animate-in fade-in duration-500">
+              <div className="flex flex-col gap-6 animate-in fade-in duration-page">
                 {[
                   { label: "Alertas de Impacto", desc: "Receba relatórios de como sua doação foi utilizada pela ONG.", defaultChecked: true },
                   { label: "Novas Campanhas", desc: "Seja avisado quando ONGs que você segue lançarem novos projetos.", defaultChecked: true },
@@ -172,7 +173,7 @@ export function Configuracoes() {
 
             {/* TAB: Payments */}
             {activeTab === 'payments' && (
-              <div className="flex flex-col gap-8 animate-in fade-in duration-500">
+              <div className="flex flex-col gap-8 animate-in fade-in duration-page">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-6 rounded-[1.5rem] bg-gradient-to-br from-graphite-dark to-graphite p-6 relative overflow-hidden text-white shadow-xl">
                        <CreditCard className="absolute top-4 right-4 w-12 h-12 opacity-10" />

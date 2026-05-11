@@ -3,6 +3,7 @@ import { Mail, Lock, User, ShieldCheck, ArrowLeft, Heart, CheckCircle2 } from 'l
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PremiumButton } from '../../components/ui/PremiumButton';
+import { motionTokens } from '../../utils/motion';
 
 export function Cadastro() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ export function Cadastro() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.5 }}
+      transition={motionTokens.page}
       className="min-h-screen bg-white flex relative overflow-hidden"
     >
       

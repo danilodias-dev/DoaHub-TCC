@@ -13,7 +13,7 @@ export function CampaignCard({ id, title, ongName, location, imageUrl, raisedAmo
         <img 
           src={imageUrl} 
           alt={title} 
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-slow group-hover:scale-110"
         />
         <div className="absolute top-3 right-3">
           <button className="glass w-10 h-10 rounded-full flex items-center justify-center text-graphite hover:text-emerald transition-colors">
@@ -44,7 +44,7 @@ export function CampaignCard({ id, title, ongName, location, imageUrl, raisedAmo
           
           <div className="w-full h-2 rounded-full bg-graphite/10 overflow-hidden">
             <div 
-              className="h-full bg-emerald transition-all duration-1000 ease-out"
+              className="h-full bg-emerald transition-all duration-slow ease-out"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>

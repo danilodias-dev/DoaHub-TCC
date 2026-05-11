@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, ChevronLeft, Lock, QrCode, Copy } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PremiumButton } from '../../components/ui/PremiumButton';
+import { motionTokens } from '../../utils/motion';
 
 export function Checkout() {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ export function Checkout() {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.5 }}
+      transition={motionTokens.page}
       className="min-h-screen bg-ice pt-24 pb-20 px-6"
     >
       
