@@ -156,7 +156,12 @@ export function Ajuda() {
              <p className="text-white/60 text-lg max-w-xl">Nossa equipe está disponível 24/7 para ajudar você. Resposta média em menos de 1 hora.</p>
           </div>
           <div className="relative z-10 flex flex-wrap justify-center gap-4">
-             <PremiumButton size="lg" className="px-10">Abrir Chat ao Vivo</PremiumButton>
+              <button
+                onClick={() => { if (window.n8nChat) window.n8nChat.toggle(); }}
+                className="bg-emerald-600 text-white px-8 py-3 rounded-full font-bold hover:bg-emerald-700 transition-all shadow-md"
+              >
+                Abrir Chat ao Vivo
+              </button>
              <PremiumButton variant="glass" size="lg" className="border-white/10 hover:bg-white/5 text-white">Enviar E-mail</PremiumButton>
           </div>
         </div>

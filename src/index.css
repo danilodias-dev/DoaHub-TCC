@@ -49,3 +49,9 @@
     transform: translateY(0);
   }
 }
+
+/* =========================================
+   n8n Chat Widget — Esconde balão padrão
+   O chat é ativado pelo botão customizado
+   ========================================= */
+.n8n-chat-bubble { display: none !important; }
