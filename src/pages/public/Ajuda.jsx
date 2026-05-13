@@ -161,10 +161,11 @@ export function Ajuda() {
             <button
               type="button"
               onClick={() => {
-                if (window.n8nChat) {
-                  window.n8nChat.toggle();
+                console.log("Triggering Hubi...");
+                if (typeof window !== 'undefined' && window.n8nChat && typeof window.n8nChat.toggle === 'function') {
+                    window.n8nChat.toggle();
                 } else {
-                  console.warn("A Hubi ainda está carregando ou o script não foi injetado.");
+                    alert("A Hubi está conectando ao servidor. Aguarde um instante ou recarregue a página (Ctrl + Shift + R).");
                 }
               }}
               className="bg-emerald-600 text-white px-8 py-3 rounded-full font-bold hover:bg-emerald-700 transition-all shadow-md active:scale-95"

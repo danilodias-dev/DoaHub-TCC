@@ -22,7 +22,7 @@
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
   <script type="module">
-    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js?v=2.0.0';
     window.n8nChat = createChat({
       webhookUrl: 'https://danilo-soares.app.n8n.cloud/webhook/832e011a-b67a-405f-8e55-39a68e76ff6a/chat',
       webhookConfig: { method: 'POST' },
@@ -31,16 +31,17 @@
       subtitle: 'Sua assistente inteligente de doações',
       mainColor: '#059669',
       bubbleColor: '#059669',
-      i18n: {
-        en: {
-          title: 'Hubi',
-          subtitle: 'Como posso ajudar?',
-          getStarted: 'Nova Conversa',
-          inputPlaceholder: 'Digite sua mensagem aqui...',
-          sendButtonText: 'Enviar'
-        }
+      i18n: { 
+        en: { 
+          title: 'Hubi', 
+          subtitle: 'Como posso ajudar?', 
+          getStarted: 'Nova Conversa', 
+          inputPlaceholder: 'Digite sua mensagem...', 
+          sendButtonText: 'Enviar' 
+        } 
       }
     });
+    window.onload = () => console.log("🚀 HUBI DIAGNOSTIC:", window.n8nChat ? "LOADED & ATTACHED" : "FAILED");
   </script>
 </body>
 
