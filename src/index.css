@@ -54,4 +54,11 @@
    n8n Chat Widget — Esconde balão padrão
    O chat é ativado pelo botão customizado
    ========================================= */
-.n8n-chat-bubble { display: none !important; }
+/* 
+   Esconde o botão (launcher) padrão do n8n Chat. 
+   Se o botão ainda aparecer, inspecione o DOM para encontrar a classe correta do elemento <button> 
+*/
+.n8n-chat-widget-launcher,
+.n8n-chat-bubble:not(.n8n-chat-widget-opened) { 
+  display: none !important; 
+}

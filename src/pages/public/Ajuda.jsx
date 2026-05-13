@@ -157,7 +157,10 @@ export function Ajuda() {
           </div>
           <div className="relative z-10 flex flex-wrap justify-center gap-4">
               <button
-                onClick={() => { if (window.n8nChat) window.n8nChat.toggle(); }}
+                onClick={() => { 
+                  console.log("Chat instance:", window.n8nChat);
+                  if (window.n8nChat) window.n8nChat.toggle(); 
+                }}
                 className="bg-emerald-600 text-white px-8 py-3 rounded-full font-bold hover:bg-emerald-700 transition-all shadow-md"
               >
                 Abrir Chat ao Vivo
