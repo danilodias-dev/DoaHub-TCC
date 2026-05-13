@@ -1,32 +1,47 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="DoaHub — Plataforma premium de doações com transparência total. Conectamos doadores exigentes a ONGs auditadas no Brasil." />
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
-    
-    <title>DoaHub — Plataforma Premium de Doações Transparentes</title>
-  </head>
-  <body class="font-sans antialiased bg-ice text-graphite selection:bg-emerald/30 selection:text-emerald-dark">
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-    <script type="module">
-      import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
-      window.n8nChat = createChat({
-        webhookUrl: 'https://danilo-soares.app.n8n.cloud/webhook/832e011a-b67a-405f-8e55-39a68e76ff6a/chat',
-        webhookConfig: { method: 'POST' },
-        showWelcomeScreen: true,
-        title: 'Hubi - Assistente DoaHub',
-        subtitle: 'Estou aqui para ajudar com as suas doações',
-        mainColor: '#059669',
-        bubbleColor: '#059669'
-      });
-    </script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="DoaHub — Plataforma premium de doações com transparência total. Conectamos doadores exigentes a ONGs auditadas no Brasil." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+
+  <title>DoaHub — Plataforma Premium de Doações Transparentes</title>
+</head>
+
+<body class="font-sans antialiased bg-ice text-graphite selection:bg-emerald/30 selection:text-emerald-dark">
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+  <script type="module">
+    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+    window.n8nChat = createChat({
+      webhookUrl: 'https://danilo-soares.app.n8n.cloud/webhook/832e011a-b67a-405f-8e55-39a68e76ff6a/chat',
+      webhookConfig: { method: 'POST' },
+      showWelcomeScreen: true,
+      title: 'Hubi - Assistente DoaHub',
+      subtitle: 'Sua assistente inteligente de doações',
+      mainColor: '#059669',
+      bubbleColor: '#059669',
+      i18n: {
+        en: {
+          title: 'Hubi',
+          subtitle: 'Como posso ajudar?',
+          getStarted: 'Nova Conversa',
+          inputPlaceholder: 'Digite sua mensagem aqui...',
+          sendButtonText: 'Enviar'
+        }
+      }
+    });
+  </script>
+</body>
+
 </html>

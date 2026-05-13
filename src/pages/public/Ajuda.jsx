@@ -37,7 +37,7 @@ function AccordionItem({ question, answer }) {
 
   return (
     <div className="border-b border-graphite/5 last:border-0">
-      <button 
+      <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full py-6 flex items-center justify-between text-left group"
       >
@@ -73,7 +73,7 @@ export function Ajuda() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       variants={pageVariants}
       initial="initial"
       animate="animate"
@@ -81,21 +81,21 @@ export function Ajuda() {
       transition={motionTokens.page}
       className="flex flex-col w-full"
     >
-      
+
       {/* Search Hero */}
       <section className="bg-emerald pt-32 pb-20 px-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
         <div className="max-w-4xl mx-auto text-center flex flex-col gap-8 relative z-10">
           <div className="flex flex-col gap-3">
-             <h1 className="text-4xl md:text-6xl font-display font-extrabold text-white tracking-tight">Como podemos ajudar?</h1>
-             <p className="text-white/80 text-lg font-medium">Encontre respostas rápidas para suas dúvidas sobre doações, segurança e gestão.</p>
+            <h1 className="text-4xl md:text-6xl font-display font-extrabold text-white tracking-tight">Como podemos ajudar?</h1>
+            <p className="text-white/80 text-lg font-medium">Encontre respostas rápidas para suas dúvidas sobre doações, segurança e gestão.</p>
           </div>
-          
+
           <div className="relative max-w-2xl mx-auto w-full">
             <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-graphite-light" />
-            <input 
-              type="text" 
-              placeholder="Ex: Como baixar meu recibo, Taxas da plataforma..." 
+            <input
+              type="text"
+              placeholder="Ex: Como baixar meu recibo, Taxas da plataforma..."
               className="w-full py-5 pl-16 pr-6 rounded-[2rem] bg-white shadow-2xl shadow-emerald-dark/20 text-graphite-dark font-medium focus:ring-4 focus:ring-white/20 outline-none transition-all"
             />
           </div>
@@ -106,7 +106,7 @@ export function Ajuda() {
       <section className="py-12 bg-ice px-6 border-b border-graphite/5">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {faqData.map((cat, idx) => (
-            <button 
+            <button
               key={idx}
               onClick={() => setActiveTab(idx)}
               className={`p-6 rounded-[2rem] border transition-all flex flex-col items-center gap-4 group ${activeTab === idx ? 'bg-white border-emerald shadow-lg' : 'bg-white/50 border-transparent hover:bg-white hover:shadow-md'}`}
@@ -118,10 +118,10 @@ export function Ajuda() {
             </button>
           ))}
           <div className="p-6 rounded-[2rem] bg-white border border-transparent shadow-sm flex flex-col items-center gap-4 opacity-50 cursor-not-allowed hidden md:flex">
-             <div className="w-12 h-12 rounded-2xl bg-ice text-graphite-light flex items-center justify-center">
-                <CreditCard className="w-6 h-6" />
-             </div>
-             <span className="text-sm font-bold tracking-tight text-graphite-light">Financeiro</span>
+            <div className="w-12 h-12 rounded-2xl bg-ice text-graphite-light flex items-center justify-center">
+              <CreditCard className="w-6 h-6" />
+            </div>
+            <span className="text-sm font-bold tracking-tight text-graphite-light">Financeiro</span>
           </div>
         </div>
       </section>
@@ -130,10 +130,10 @@ export function Ajuda() {
       <section className="py-20 px-6 bg-white min-h-[500px]">
         <div className="max-w-4xl mx-auto flex flex-col gap-8">
           <div className="flex items-center gap-3">
-             <div className="w-1 h-8 bg-emerald rounded-full"></div>
-             <h2 className="text-2xl font-display font-bold text-graphite-dark">{faqData[activeTab].category}</h2>
+            <div className="w-1 h-8 bg-emerald rounded-full"></div>
+            <h2 className="text-2xl font-display font-bold text-graphite-dark">{faqData[activeTab].category}</h2>
           </div>
-          
+
           <div className="bg-white rounded-[2.5rem] border border-graphite/5 px-8 md:px-10 shadow-sm">
             {faqData[activeTab].questions.map((item, idx) => (
               <AccordionItem key={idx} question={item.q} answer={item.a} />
@@ -146,26 +146,33 @@ export function Ajuda() {
       <section className="py-24 bg-ice px-6">
         <div className="max-w-4xl mx-auto rounded-[3rem] bg-graphite-dark p-10 md:p-16 flex flex-col items-center text-center gap-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-10 opacity-10">
-             <MessageCircle className="w-40 h-40 text-emerald" />
+            <MessageCircle className="w-40 h-40 text-emerald" />
           </div>
           <div className="relative z-10 flex flex-col items-center gap-4">
-             <div className="w-16 h-16 rounded-full bg-emerald flex items-center justify-center shadow-lg shadow-emerald/30 mb-2">
-                <HelpCircle className="w-8 h-8 text-white" />
-             </div>
-             <h3 className="text-3xl md:text-4xl font-display font-bold text-white">Ainda não encontrou o que procura?</h3>
-             <p className="text-white/60 text-lg max-w-xl">Nossa equipe está disponível 24/7 para ajudar você. Resposta média em menos de 1 hora.</p>
+            <div className="w-16 h-16 rounded-full bg-emerald flex items-center justify-center shadow-lg shadow-emerald/30 mb-2">
+              <HelpCircle className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-3xl md:text-4xl font-display font-bold text-white">Ainda não encontrou o que procura?</h3>
+            <p className="text-white/60 text-lg max-w-xl">Nossa equipe está disponível 24/7 para ajudar você. Resposta média em menos de 1 hora.</p>
           </div>
           <div className="relative z-10 flex flex-wrap justify-center gap-4">
-              <button
-                onClick={() => { 
-                  console.log("Chat instance:", window.n8nChat);
-                  if (window.n8nChat) window.n8nChat.toggle(); 
-                }}
-                className="bg-emerald-600 text-white px-8 py-3 rounded-full font-bold hover:bg-emerald-700 transition-all shadow-md"
-              >
-                Abrir Chat ao Vivo
-              </button>
-             <PremiumButton variant="glass" size="lg" className="border-white/10 hover:bg-white/5 text-white">Enviar E-mail</PremiumButton>
+
+            {/* O NOVO BOTÃO FOI INSERIDO AQUI */}
+            <button
+              type="button"
+              onClick={() => {
+                if (window.n8nChat) {
+                  window.n8nChat.toggle();
+                } else {
+                  console.warn("A Hubi ainda está carregando ou o script não foi injetado.");
+                }
+              }}
+              className="bg-emerald-600 text-white px-8 py-3 rounded-full font-bold hover:bg-emerald-700 transition-all shadow-md active:scale-95"
+            >
+              Abrir Chat ao Vivo
+            </button>
+
+            <PremiumButton variant="glass" size="lg" className="border-white/10 hover:bg-white/5 text-white">Enviar E-mail</PremiumButton>
           </div>
         </div>
       </section>
