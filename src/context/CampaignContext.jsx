@@ -12,25 +12,25 @@ import { DollarSign, Megaphone, Users, TrendingUp, CheckCircle2, FileText, Spark
  */
 
 const INITIAL_CAMPAIGNS = [
-  { id: 1, title: 'Alimentação Sertão PE', status: 'Ativa', raised: 42500, goal: 50000, donors: 312, category: 'Alimentação', description: 'Distribuição de cestas básicas para famílias em situação de vulnerabilidade no sertão pernambucano.', launchDate: '2026-04-21T00:00:00Z', deadline: '2026-05-21T00:00:00Z' },
-  { id: 2, title: 'Reforma Escola Comunitária', status: 'Ativa', raised: 15000, goal: 30000, donors: 145, category: 'Educação', description: 'Reforma completa da infraestrutura da escola comunitária do bairro Santo Amaro.', launchDate: '2026-04-11T00:00:00Z', deadline: '2026-05-16T00:00:00Z' },
-  { id: 3, title: 'Kit Escolar 2024', status: 'Finalizada', raised: 22000, goal: 20000, donors: 210, category: 'Educação', description: 'Distribuição de kits escolares completos para crianças carentes.', launchDate: '2026-02-01T00:00:00Z', deadline: '2026-03-01T00:00:00Z' },
+  { id: 301, title: 'Alimentação Sertão PE', status: 'Ativa', raised: 42500, goal: 50000, donors: 312, category: 'Alimentação', description: 'Distribuição de cestas básicas para famílias em situação de vulnerabilidade no sertão pernambucano.', launchDate: '2026-04-21T00:00:00Z', deadline: '2026-05-21T00:00:00Z' },
+  { id: 305, title: 'Reforma Escola do Bem', status: 'Ativa', raised: 15000, goal: 30000, donors: 145, category: 'Educação', description: 'Reforma completa da infraestrutura da escola comunitária do bairro Santo Amaro.', launchDate: '2026-04-11T00:00:00Z', deadline: '2026-05-16T00:00:00Z' },
+  { id: 306, title: 'Kit Escolar 2024', status: 'Finalizada', raised: 22000, goal: 20000, donors: 210, category: 'Educação', description: 'Distribuição de kits escolares completos para crianças carentes.', launchDate: '2026-02-01T00:00:00Z', deadline: '2026-03-01T00:00:00Z' },
 ];
 
 const INITIAL_ACTIVITY = [
-  { id: 1, name: 'Ana Silva', amount: 'R$ 150', time: 'Há 5 min', action: 'Doação recebida', icon: DollarSign, type: 'donation' },
-  { id: 2, name: 'Eduardo M.', amount: 'R$ 50', time: 'Há 12 min', action: 'Novo doador mensal', icon: Users, type: 'donor' },
-  { id: 3, name: 'Campanha Sertão', amount: null, time: 'Há 1h', action: 'Meta de 80% atingida!', icon: CheckCircle2, type: 'milestone' },
-  { id: 4, name: 'Relatório Mensal', amount: null, time: 'Há 3h', action: 'Relatório gerado', icon: FileText, type: 'report' },
-  { id: 5, name: 'Maria Santos', amount: 'R$ 300', time: 'Há 5h', action: 'Doação recebida', icon: DollarSign, type: 'donation' },
-  { id: 6, name: 'Pedro Oliveira', amount: 'R$ 75', time: 'Há 8h', action: 'Novo doador', icon: Users, type: 'donor' },
+  { id: 101, name: 'Ana Silva', amount: 'R$ 150', time: 'Há 5 min', action: 'Doação recebida', icon: DollarSign, type: 'donation' },
+  { id: 102, name: 'Eduardo M.', amount: 'R$ 50', time: 'Há 12 min', action: 'Novo doador mensal', icon: Users, type: 'donor' },
+  { id: 103, name: 'Campanha Sertão', amount: null, time: 'Há 1h', action: 'Meta de 80% atingida!', icon: CheckCircle2, type: 'milestone' },
+  { id: 104, name: 'Relatório Mensal', amount: null, time: 'Há 3h', action: 'Relatório gerado', icon: FileText, type: 'report' },
+  { id: 105, name: 'Maria Santos', amount: 'R$ 300', time: 'Há 5h', action: 'Doação recebida', icon: DollarSign, type: 'donation' },
+  { id: 106, name: 'Pedro Oliveira', amount: 'R$ 75', time: 'Há 8h', action: 'Novo doador', icon: Users, type: 'donor' },
 ];
 
 const BASE_RAISED_TOTAL = 124500;
 const BASE_DONORS = 1240;
 
 const INITIAL_ORG_PROFILE = {
-  id: 1,
+  id: 201,
   name: 'Instituto Esperança',
   bio: 'Organização sem fins lucrativos dedicada à transformação social no sertão nordestino, com foco em segurança alimentar, educação e desenvolvimento comunitário.',
   email: 'contato@institutoesperanca.org.br',

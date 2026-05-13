@@ -25,7 +25,7 @@ import {
 // ─── Campanhas (usadas em DoadorHome, PerfilONG) ─────────────
 export const MOCK_CAMPAIGNS = [
   {
-    id: 1,
+    id: 301,
     title: 'Alimentação para 500 Famílias no Sertão',
     ongName: 'Instituto Esperança Viva',
     location: 'Pernambuco, PE',
@@ -35,7 +35,7 @@ export const MOCK_CAMPAIGNS = [
     donorsCount: 312,
   },
   {
-    id: 2,
+    id: 302,
     title: 'Equipando Escola Comunitária de Tecnologia',
     ongName: 'Code for Kids',
     location: 'São Paulo, SP',
@@ -45,7 +45,7 @@ export const MOCK_CAMPAIGNS = [
     donorsCount: 89,
   },
   {
-    id: 3,
+    id: 303,
     title: 'Resgate e Reabilitação de Animais Silvestres',
     ongName: 'Santuário Verde',
     location: 'Manaus, AM',
@@ -55,7 +55,7 @@ export const MOCK_CAMPAIGNS = [
     donorsCount: 45,
   },
   {
-    id: 4,
+    id: 304,
     title: 'Construção de Poços Artesianos',
     ongName: 'Água para Todos',
     location: 'Bahia, BA',
@@ -69,17 +69,7 @@ export const MOCK_CAMPAIGNS = [
 // ─── Campanhas do Perfil ONG ─────────────────────────────────
 export const MOCK_ONG_CAMPAIGNS = [
   {
-    id: 1,
-    title: 'Alimentação Sertão PE',
-    ongName: 'Inst. Esperança',
-    location: 'Recife, PE',
-    imageUrl: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&auto=format&fit=crop',
-    raisedAmount: 42500,
-    goalAmount: 50000,
-    donorsCount: 1240,
-  },
-  {
-    id: 2,
+    id: 305,
     title: 'Reforma Escola do Bem',
     ongName: 'Inst. Esperança',
     location: 'Recife, PE',
@@ -88,15 +78,25 @@ export const MOCK_ONG_CAMPAIGNS = [
     goalAmount: 30000,
     donorsCount: 312,
   },
+  {
+    id: 306,
+    title: 'Kit Escolar 2024',
+    ongName: 'Inst. Esperança',
+    location: 'Recife, PE',
+    imageUrl: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&auto=format&fit=crop',
+    raisedAmount: 22000,
+    goalAmount: 20000,
+    donorsCount: 210,
+  },
 ];
 
 // ─── Histórico de Doações ────────────────────────────────────
 export const MOCK_DONATIONS = [
-  { id: 1, campaign: 'Alimentação Sertão PE', ong: 'Inst. Esperança Viva', amount: 200, date: '02/04/2026', status: 'Confirmada' },
-  { id: 2, campaign: 'Reforma Escola Comunitária', ong: 'ONG Educar+', amount: 150, date: '28/03/2026', status: 'Confirmada' },
-  { id: 3, campaign: 'Kit Escolar 2026', ong: 'Inst. Esperança Viva', amount: 100, date: '15/03/2026', status: 'Confirmada' },
-  { id: 4, campaign: 'Água Potável Amazônia', ong: 'Planeta Azul', amount: 500, date: '01/03/2026', status: 'Confirmada' },
-  { id: 5, campaign: 'Alimentação Sertão PE', ong: 'Inst. Esperança Viva', amount: 100, date: '14/02/2026', status: 'Confirmada' },
+  { id: 101, campaignId: 301, campaign: 'Alimentação Sertão PE', ong: 'Inst. Esperança Viva', amount: 200, date: '02/04/2026', status: 'Confirmada' },
+  { id: 102, campaignId: 305, campaign: 'Reforma Escola Comunitária', ong: 'ONG Educar+', amount: 150, date: '28/03/2026', status: 'Confirmada' },
+  { id: 103, campaignId: 306, campaign: 'Kit Escolar 2026', ong: 'Inst. Esperança Viva', amount: 100, date: '15/03/2026', status: 'Confirmada' },
+  { id: 104, campaignId: 304, campaign: 'Água Potável Amazônia', ong: 'Planeta Azul', amount: 500, date: '01/03/2026', status: 'Confirmada' },
+  { id: 105, campaignId: 301, campaign: 'Alimentação Sertão PE', ong: 'Inst. Esperança Viva', amount: 100, date: '14/02/2026', status: 'Confirmada' },
 ];
 
 // ─── Medalhas do Doador ──────────────────────────────────────
@@ -125,9 +125,9 @@ export const MOCK_DASHBOARD_STATS = [
 ];
 
 export const MOCK_DASHBOARD_CAMPAIGNS = [
-  { id: 1, title: 'Alimentação Sertão PE', status: 'Ativa', raised: 42500, goal: 50000, donors: 312 },
-  { id: 2, title: 'Reforma Escola Comunitária', status: 'Ativa', raised: 15000, goal: 30000, donors: 145 },
-  { id: 3, title: 'Kit Escolar 2024', status: 'Finalizada', raised: 22000, goal: 20000, donors: 210 },
+  { id: 301, title: 'Alimentação Sertão PE', status: 'Ativa', raised: 42500, goal: 50000, donors: 312 },
+  { id: 305, title: 'Reforma Escola do Bem', status: 'Ativa', raised: 15000, goal: 30000, donors: 145 },
+  { id: 306, title: 'Kit Escolar 2024', status: 'Finalizada', raised: 22000, goal: 20000, donors: 210 },
 ];
 
 // ─── Transparência e Estatísticas Globais ────────────────────

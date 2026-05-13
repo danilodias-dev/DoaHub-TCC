@@ -94,7 +94,7 @@ export function Historico() {
             {MOCK_DONATIONS.map((d, idx) => (
               <Link 
                 key={d.id}
-                to={`/campanha/${d.id}`}
+                to={`/campanha/${d.campaignId}`}
                 className={`flex items-center gap-5 px-6 py-5 hover:bg-ice transition-colors cursor-pointer group ${idx < donations.length - 1 ? 'border-b border-graphite/5' : ''}`}
               >
                 {/* Status Dot */}

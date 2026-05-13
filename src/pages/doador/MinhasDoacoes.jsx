@@ -73,8 +73,8 @@ export function MinhasDoacoes() {
           </div>
 
           <div className="flex flex-col">
-            {MOCK_DONATIONS.filter(d => d.ong.toLowerCase().includes(searchTerm.toLowerCase())).map((donation, idx) => (
-              <div key={idx} className="grid grid-cols-1 md:grid-cols-5 gap-4 p-6 md:px-8 md:py-6 border-b border-graphite/5 last:border-0 hover:bg-ice/20 transition-colors items-center group">
+            {MOCK_DONATIONS.filter(d => d.ong.toLowerCase().includes(searchTerm.toLowerCase())).map((donation) => (
+              <div key={donation.id} className="grid grid-cols-1 md:grid-cols-5 gap-4 p-6 md:px-8 md:py-6 border-b border-graphite/5 last:border-0 hover:bg-ice/20 transition-colors items-center group">
                 <div className="col-span-2 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-ice flex items-center justify-center text-emerald">
                      <Heart className="w-6 h-6 fill-current" />

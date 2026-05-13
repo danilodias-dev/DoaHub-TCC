@@ -26,7 +26,7 @@ export function CampaignCard({ id, title, ongName, location, imageUrl, raisedAmo
         <div className="flex flex-col gap-1">
           <h3 className="font-display font-bold text-lg text-graphite-dark line-clamp-1">{title}</h3>
           <p className="text-sm text-graphite-light font-medium flex items-center gap-1.5 flex-wrap">
-            <Link to={`/instituicao/1`} className="text-emerald hover:underline font-bold transition-all">{ongName}</Link>
+            <Link to={`/instituicao/201`} className="text-emerald hover:underline font-bold transition-all">{ongName}</Link>
             <span className="w-1 h-1 rounded-full bg-graphite/20"></span>
             <span className="flex items-center gap-0.5"><MapPin className="w-3.5 h-3.5" />{location}</span>
           </p>
