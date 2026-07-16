@@ -53,6 +53,23 @@ function maskCurrency(raw) {
   return brl.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+function maskCurrencyNoPrefix(raw) {
+  const digits = raw.replace(/\D/g, '');
+  if (!digits) return '';
+  const cents = parseInt(digits, 10);
+  const brl = cents / 100;
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(brl);
+}
+
+function parseBRLNoPrefix(str) {
+  if (!str) return 0;
+  const cleaned = str.replace(/[^\d]/g, '');
+  return parseInt(cleaned, 10) / 100 || 0;
+}
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function Tooltip({ children, content }) {
@@ -254,9 +271,11 @@ export function SimuladorIR() {
   const [entity, setEntity]           = useState(null);          // 'pf' | 'pj'
   const [pfModel, setPfModel]         = useState(null);          // 'completo' | 'simplificado'
   const [pjRegime, setPjRegime]       = useState(null);          // 'lucro_real' | 'lucro_presumido' | 'simples'
-  const [inputMode, setInputMode]     = useState('estimator');   // 'estimator' | 'advanced'
+  const [inputMode, setInputMode]     = useState('estimate');    // 'estimate' | 'exact'
   const [rawIncome, setRawIncome]     = useState('');
   const [rawTaxDue, setRawTaxDue]     = useState('');
+  const [income, setIncome]           = useState(0);             // float value
+  const [taxDue, setTaxDue]           = useState(0);             // float value
   const [lgpdConsent, setLgpdConsent] = useState(false);
 
   // — Derived flags
@@ -266,41 +285,29 @@ export function SimuladorIR() {
                     (isPJ && pjRegime && pjRegime !== 'lucro_real');
 
   const modelSelected = (isPF && pfModel !== null) || (isPJ && pjRegime !== null);
+  const isEligible    = (isPF && pfModel === 'completo') || (isPJ && pjRegime === 'lucro_real');
 
-  // — Calculation
+  // — Calculation (Bypassed for this iteration as requested: Do not calculate final result yet)
   const calc = useMemo(() => {
-    if (!lgpdConsent || isBlocked || !entity) return null;
+    // eslint-disable-next-line no-unreachable
+    console.log(entity, isPF, isBlocked, inputMode, income, taxDue, lgpdConsent, modelSelected);
+    return null;
+  }, [entity, isPF, isBlocked, inputMode, income, taxDue, lgpdConsent, modelSelected]);
 
-    let taxDue = 0;
-    if (inputMode === 'estimator') {
-      const income = parseBRL(rawIncome);
-      if (!income) return null;
-      taxDue = income * 0.15;
-    } else {
-      taxDue = parseBRL(rawTaxDue);
-      if (!taxDue) return null;
-    }
-
-    const limitPct  = isPF ? 0.06 : 0.02;
-    const splitPct  = limitPct / 2;
-    const totalLimit = taxDue * limitPct;
-    const ecaLimit   = taxDue * splitPct;
-    const idosoLimit = taxDue * splitPct;
-
-    return { taxDue, totalLimit, ecaLimit, idosoLimit, splitPct, limitPct, isEstimated: inputMode === 'estimator' };
-  }, [entity, isPF, isBlocked, inputMode, rawIncome, rawTaxDue, lgpdConsent]);
-
-  // — Input handlers
+  // — Input handlers (Currency mask formatting and float parsing)
   const handleIncomeChange = (e) => {
-    const masked = maskCurrency(e.target.value);
+    const val = e.target.value;
+    const masked = maskCurrencyNoPrefix(val);
     setRawIncome(masked);
+    setIncome(parseBRLNoPrefix(masked));
   };
 
   const handleTaxDueChange = (e) => {
-    const masked = maskCurrency(e.target.value);
+    const val = e.target.value;
+    const masked = maskCurrencyNoPrefix(val);
     setRawTaxDue(masked);
+    setTaxDue(parseBRLNoPrefix(masked));
   };
-
   const pageVariants = {
     initial: { opacity: 0, y: 12 },
     animate: { opacity: 1, y: 0 },
@@ -517,19 +524,22 @@ export function SimuladorIR() {
 
             {/* CARD 3: Input Mode & Value */}
             <motion.div layout {...fadeUp} transition={{ delay: 0.15 }}
-              className={`md:col-span-2 bg-white rounded-[2rem] border border-graphite/8 p-6 shadow-sm flex flex-col gap-5
-                ${(!lgpdConsent || !entity || !modelSelected || isBlocked) ? 'opacity-50 pointer-events-none select-none' : ''}`}
+              className={`md:col-span-2 bg-white rounded-[2rem] border border-graphite/8 p-6 shadow-sm flex flex-col gap-5 transition-opacity duration-default
+                ${(!lgpdConsent || !entity || !isEligible) ? 'opacity-50 pointer-events-none select-none cursor-not-allowed' : ''}`}
             >
               <div className="flex flex-col gap-1.5">
                 <span className="text-xs font-semibold text-graphite-light uppercase tracking-wider">Passo 3</span>
                 <h2 className="font-display font-bold text-lg text-graphite-dark">Informe seus valores</h2>
+                {(!isEligible && entity) && (
+                  <p className="text-xs text-red-500 font-medium">Selecione um regime tributário elegível no Passo 2 para liberar este campo.</p>
+                )}
               </div>
 
               {/* Mode toggle */}
               <div className="flex gap-2 p-1 bg-ice rounded-2xl">
                 {[
-                  { key: 'estimator', label: 'Estimativa Rápida', icon: TrendingUp },
-                  { key: 'advanced',  label: 'IR Calculado',      icon: Calculator  },
+                  { key: 'estimate', label: 'Estimativa Rápida', icon: TrendingUp },
+                  { key: 'exact',  label: 'IR Calculado',      icon: Calculator  },
                 ].map(({ key, label, icon: Icon }) => (
                   <button
                     key={key}
@@ -537,7 +547,9 @@ export function SimuladorIR() {
                     type="button"
                     onClick={() => setInputMode(key)}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all duration-default
-                      ${inputMode === key ? 'bg-white text-emerald-dark shadow-sm' : 'text-graphite-light hover:text-graphite-dark'}`}
+                      ${inputMode === key
+                        ? 'bg-green-50 text-green-700 shadow-sm border border-green-200/50'
+                        : 'text-graphite-light hover:text-graphite-dark bg-transparent'}`}
                   >
                     <Icon className="w-4 h-4" />
                     {label}
@@ -546,8 +558,8 @@ export function SimuladorIR() {
               </div>
 
               <AnimatePresence mode="wait">
-                {inputMode === 'estimator' ? (
-                  <motion.div key="estimator" {...fadeUp} className="flex flex-col gap-4">
+                {inputMode === 'estimate' ? (
+                  <motion.div key="estimate" {...fadeUp} className="flex flex-col gap-4">
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="gross-income" className="text-sm font-semibold text-graphite-dark">
                         {isPJ ? 'Lucro Operacional Bruto (anual)' : 'Renda Bruta Anual'}
@@ -560,7 +572,7 @@ export function SimuladorIR() {
                           inputMode="numeric"
                           value={rawIncome}
                           onChange={handleIncomeChange}
-                          placeholder="R$ 0,00"
+                          placeholder="0,00"
                           className="w-full pl-10 pr-4 py-3.5 rounded-2xl border border-graphite/15 bg-ice focus:outline-none focus:ring-2 focus:ring-emerald/40 focus:border-emerald font-medium text-graphite-dark transition-all duration-fast"
                         />
                       </div>
@@ -575,7 +587,7 @@ export function SimuladorIR() {
                     </div>
                   </motion.div>
                 ) : (
-                  <motion.div key="advanced" {...fadeUp} className="flex flex-col gap-4">
+                  <motion.div key="exact" {...fadeUp} className="flex flex-col gap-4">
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="tax-due" className="text-sm font-semibold text-graphite-dark flex items-center">
                         Imposto Devido (calculado)
@@ -591,7 +603,7 @@ export function SimuladorIR() {
                           inputMode="numeric"
                           value={rawTaxDue}
                           onChange={handleTaxDueChange}
-                          placeholder="R$ 0,00"
+                          placeholder="0,00"
                           className="w-full pl-10 pr-4 py-3.5 rounded-2xl border border-graphite/15 bg-ice focus:outline-none focus:ring-2 focus:ring-emerald/40 focus:border-emerald font-medium text-graphite-dark transition-all duration-fast"
                         />
                       </div>
