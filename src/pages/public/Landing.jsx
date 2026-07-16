@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PremiumButton } from '../../components/ui/PremiumButton';
+import { SimulatorCTA } from '../../components/ui/SimulatorCTA';
 import { HeartHandshake, Globe2, ShieldCheck, ArrowRight, CheckCircle2, Users, Building2, TrendingUp } from 'lucide-react';
 import { motionTokens } from '../../utils/motion';
 
@@ -181,6 +182,9 @@ export function Landing() {
           </div>
         </div>
       </section>
+
+      {/* IR Simulator CTA */}
+      <SimulatorCTA />
 
       {/* Testimonials */}
       <section className="bg-graphite-dark py-32 px-6 relative overflow-hidden">

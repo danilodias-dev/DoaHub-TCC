@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { to: '/explorar', label: 'Explorar' },
   { to: '/transparencia', label: 'Transparência' },
   { to: '/quem-somos', label: 'Quem Somos' },
+  { to: '/simulador-ir', label: 'Simulador de IR' },
   { to: '/ajuda', label: 'Central de Ajuda' },
 ];
 
@@ -17,6 +18,7 @@ const MOBILE_LINKS = [
   { to: '/explorar', label: 'Explorar Campanhas' },
   { to: '/transparencia', label: 'Transparência' },
   { to: '/quem-somos', label: 'Quem Somos' },
+  { to: '/simulador-ir', label: 'Simulador de IR' },
   { to: '/ajuda', label: 'Central de Ajuda' },
   { to: '/doador/doacoes', label: 'Minhas Doações' },
   { to: '/configuracoes', label: 'Configurações' },

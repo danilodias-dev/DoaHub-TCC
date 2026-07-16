@@ -10,6 +10,7 @@ import { Landing } from './pages/public/Landing';
 import { QuemSomos } from './pages/public/QuemSomos';
 import { Transparencia } from './pages/public/Transparencia';
 import { Ajuda } from './pages/public/Ajuda';
+import { SimuladorIR } from './pages/public/SimuladorIR';
 
 // Auth Pages
 import { Login } from './pages/auth/Login';
@@ -55,6 +56,7 @@ function AppRoutes() {
         <Route path="/quem-somos" element={<QuemSomos />} />
         <Route path="/transparencia" element={<Transparencia />} />
         <Route path="/ajuda" element={<Ajuda />} />
+        <Route path="/simulador-ir" element={<SimuladorIR />} />
 
         {/* Auth */}
         <Route path="/login" element={<Login />} />
