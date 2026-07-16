@@ -86,31 +86,106 @@ function Tooltip({ children, content }) {
   );
 }
 
+// Entity Card — usa verde explícito (border-green-500 / bg-green-50) para o estado ativo
+function EntityCard({ id, label, description, icon: Icon, selected, onClick }) {
+  return (
+    <button
+      id={id}
+      type="button"
+      onClick={onClick}
+      className={`relative flex flex-col gap-2 p-5 rounded-3xl border-2 text-left transition-all duration-default focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500
+        ${selected
+          ? 'border-green-500 bg-green-50 shadow-md shadow-green-500/10'
+          : 'border-graphite/10 bg-white hover:border-green-400/50 hover:shadow-sm'
+        }`}
+    >
+      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-default
+        ${selected ? 'bg-green-500 text-white' : 'bg-ice text-graphite-light'}`}
+      >
+        <Icon className="w-5 h-5" />
+      </div>
+      <span className={`font-bold text-sm font-display ${selected ? 'text-green-800' : 'text-graphite-dark'}`}>
+        {label}
+      </span>
+      {description && (
+        <span className={`text-xs leading-relaxed ${selected ? 'text-green-700' : 'text-graphite-light'}`}>{description}</span>
+      )}
+      {selected && (
+        <CheckCircle2 className="absolute top-3 right-3 w-4 h-4 text-green-500" />
+      )}
+    </button>
+  );
+}
+
+// Radio Option — usado no Step 2 (Modelo de Declaração / Regime Tributário)
+function RadioOption({ id, name, value, currentValue, label, description, allowed, onChange }) {
+  const isSelected = currentValue === value;
+  return (
+    <label
+      htmlFor={id}
+      className={`flex items-start gap-3.5 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-default
+        ${isSelected && allowed  ? 'border-green-500 bg-green-50'
+        : isSelected && !allowed ? 'border-red-400 bg-red-50'
+        : 'border-graphite/10 bg-white hover:border-graphite/25 hover:shadow-sm'
+        }`}
+    >
+      <input
+        id={id}
+        type="radio"
+        name={name}
+        value={value}
+        checked={isSelected}
+        onChange={() => onChange(value)}
+        className="mt-0.5 w-4 h-4 accent-green-600 cursor-pointer flex-shrink-0"
+      />
+      <div className="flex flex-col gap-0.5">
+        <span className={`text-sm font-bold font-display leading-tight
+          ${isSelected && allowed  ? 'text-green-800'
+          : isSelected && !allowed ? 'text-red-700'
+          : 'text-graphite-dark'
+          }`}>
+          {label}
+        </span>
+        {description && (
+          <span className={`text-xs leading-relaxed
+            ${isSelected && allowed  ? 'text-green-700'
+            : isSelected && !allowed ? 'text-red-600'
+            : 'text-graphite-light'
+            }`}>
+            {description}
+          </span>
+        )}
+      </div>
+    </label>
+  );
+}
+
+// SelectionCard mantido apenas para compatibilidade interna (não usado em Step 1/2 agora)
 function SelectionCard({ id, label, description, icon: Icon, selected, onClick }) {
   return (
     <button
       id={id}
       type="button"
       onClick={onClick}
-      className={`relative flex flex-col gap-2 p-5 rounded-3xl border-2 text-left transition-all duration-default focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald
+      className={`relative flex flex-col gap-2 p-5 rounded-3xl border-2 text-left transition-all duration-default focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500
         ${selected
-          ? 'border-emerald bg-emerald/5 shadow-md shadow-emerald/10'
-          : 'border-graphite/10 bg-white hover:border-emerald/40 hover:shadow-sm'
+          ? 'border-green-500 bg-green-50 shadow-md shadow-green-500/10'
+          : 'border-graphite/10 bg-white hover:border-green-400/50 hover:shadow-sm'
         }`}
     >
       <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-default
-        ${selected ? 'bg-emerald text-white' : 'bg-ice text-graphite-light'}`}
+        ${selected ? 'bg-green-500 text-white' : 'bg-ice text-graphite-light'}`}
       >
         <Icon className="w-5 h-5" />
       </div>
-      <span className={`font-bold text-sm font-display ${selected ? 'text-emerald-dark' : 'text-graphite-dark'}`}>
+      <span className={`font-bold text-sm font-display ${selected ? 'text-green-800' : 'text-graphite-dark'}`}>
         {label}
       </span>
       {description && (
         <span className="text-xs text-graphite-light leading-relaxed">{description}</span>
       )}
       {selected && (
-        <CheckCircle2 className="absolute top-3 right-3 w-4 h-4 text-emerald" />
+        <CheckCircle2 className="absolute top-3 right-3 w-4 h-4 text-green-500" />
       )}
     </button>
   );
@@ -145,9 +220,17 @@ function MetricCard({ label, value, highlight = false, sublabel, children }) {
 
 function BlockedWarning({ message }) {
   return (
-    <motion.div {...fadeUp} className="flex gap-3 items-start bg-amber-50 border border-amber-200 rounded-3xl p-5">
-      <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-      <p className="text-sm text-amber-800 font-medium leading-relaxed">{message}</p>
+    <motion.div
+      {...fadeUp}
+      className="flex gap-3 items-start bg-red-50 border-2 border-red-300 rounded-3xl p-5 shadow-sm shadow-red-100"
+    >
+      <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-red-100 flex items-center justify-center mt-0.5">
+        <AlertTriangle className="w-4 h-4 text-red-600" />
+      </div>
+      <div className="flex flex-col gap-1">
+        <span className="text-sm font-bold text-red-700">Regime não elegível</span>
+        <p className="text-sm text-red-600 font-medium leading-relaxed">{message}</p>
+      </div>
     </motion.div>
   );
 }
@@ -292,15 +375,18 @@ export function SimuladorIR() {
 
             {/* CARD 1: Entity Selection */}
             <motion.div layout {...fadeUp} transition={{ delay: 0.05 }}
-              className={`md:col-span-1 bg-white rounded-[2rem] border border-graphite/8 p-6 shadow-sm flex flex-col gap-5
-                ${!lgpdConsent ? 'opacity-50 pointer-events-none select-none' : ''}`}
+              className={`md:col-span-1 bg-white rounded-[2rem] border border-graphite/8 p-6 shadow-sm flex flex-col gap-5 transition-opacity duration-default
+                ${!lgpdConsent ? 'opacity-50 pointer-events-none select-none cursor-not-allowed' : ''}`}
             >
               <div className="flex flex-col gap-1.5">
                 <span className="text-xs font-semibold text-graphite-light uppercase tracking-wider">Passo 1</span>
                 <h2 className="font-display font-bold text-lg text-graphite-dark">Quem declara?</h2>
+                {!lgpdConsent && (
+                  <p className="text-xs text-graphite-light">Aceite os termos LGPD acima para continuar.</p>
+                )}
               </div>
               <div className="flex flex-col gap-3">
-                <SelectionCard
+                <EntityCard
                   id="entity-pf"
                   label="Pessoa Física (PF)"
                   description="Contribuinte individual — declaração IRPF"
@@ -308,7 +394,7 @@ export function SimuladorIR() {
                   selected={entity === 'pf'}
                   onClick={() => { setEntity('pf'); setPjRegime(null); }}
                 />
-                <SelectionCard
+                <EntityCard
                   id="entity-pj"
                   label="Pessoa Jurídica (PJ)"
                   description="Empresa — declaração IRPJ"
@@ -321,83 +407,108 @@ export function SimuladorIR() {
 
             {/* CARD 2: Tax Model / Regime */}
             <motion.div layout {...fadeUp} transition={{ delay: 0.1 }}
-              className={`md:col-span-2 bg-white rounded-[2rem] border border-graphite/8 p-6 shadow-sm flex flex-col gap-5
-                ${(!lgpdConsent || !entity) ? 'opacity-50 pointer-events-none select-none' : ''}`}
+              className={`md:col-span-2 bg-white rounded-[2rem] border border-graphite/8 p-6 shadow-sm flex flex-col gap-5 transition-opacity duration-default
+                ${(!lgpdConsent || !entity) ? 'opacity-50 pointer-events-none select-none cursor-not-allowed' : ''}`}
             >
               <div className="flex flex-col gap-1.5">
                 <span className="text-xs font-semibold text-graphite-light uppercase tracking-wider">Passo 2</span>
                 <h2 className="font-display font-bold text-lg text-graphite-dark">
-                  {!entity ? 'Modelo de declaração' : isPF ? 'Modelo de declaração' : 'Regime tributário'}
+                  {!entity
+                    ? 'Modelo de declaração'
+                    : isPF
+                    ? 'Qual é o seu modelo de declaração?'
+                    : 'Qual é o regime tributário da empresa?'}
                 </h2>
               </div>
 
               <AnimatePresence mode="wait">
+                {/* Placeholder — Step 1 ainda não selecionado */}
                 {!entity && (
-                  <motion.p key="placeholder" {...fadeIn} className="text-sm text-graphite-light">
-                    Selecione seu tipo de contribuinte no passo 1 para continuar.
-                  </motion.p>
+                  <motion.div
+                    key="placeholder"
+                    {...fadeIn}
+                    className="flex flex-col items-center justify-center gap-3 py-10 text-center"
+                  >
+                    <div className="w-12 h-12 rounded-2xl bg-ice flex items-center justify-center">
+                      <ChevronDown className="w-6 h-6 text-graphite-light/40" />
+                    </div>
+                    <p className="text-sm text-graphite-light font-medium">
+                      Selecione o tipo de contribuinte no <strong>Passo 1</strong> para continuar.
+                    </p>
+                  </motion.div>
                 )}
 
-                {/* PF models */}
+                {/* Radio Buttons — PF */}
                 {isPF && (
-                  <motion.div key="pf-models" {...fadeUp} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <SelectionCard
+                  <motion.div key="pf-models" {...fadeUp} className="flex flex-col gap-3">
+                    <RadioOption
                       id="pf-completo"
-                      label="Declaração Completa"
-                      description="Permite deduções legais, incluindo destinação de IR para fundos sociais."
-                      icon={CheckCircle2}
-                      selected={pfModel === 'completo'}
-                      onClick={() => setPfModel('completo')}
+                      name="pf-model"
+                      value="completo"
+                      currentValue={pfModel}
+                      label="Declaração Completa (Modelo Completo)"
+                      description="Permite deduções legais detalhadas, incluindo a destinação de IR para fundos sociais como ECA e Idoso. Recomendado para quem tem muitas despesas dedutíveis."
+                      allowed={true}
+                      onChange={setPfModel}
                     />
-                    <SelectionCard
+                    <RadioOption
                       id="pf-simplificado"
+                      name="pf-model"
+                      value="simplificado"
+                      currentValue={pfModel}
                       label="Declaração Simplificada"
-                      description="Desconto padrão de 20%. Não permite destinação incentivada."
-                      icon={X}
-                      selected={pfModel === 'simplificado'}
-                      onClick={() => setPfModel('simplificado')}
+                      description="Utiliza desconto padrão de 20% sobre a base de cálculo. Não é possível realizar destinação incentivada de IR nesta modalidade."
+                      allowed={false}
+                      onChange={setPfModel}
                     />
                   </motion.div>
                 )}
 
-                {/* PJ regimes */}
+                {/* Radio Buttons — PJ */}
                 {isPJ && (
-                  <motion.div key="pj-regimes" {...fadeUp} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <SelectionCard
+                  <motion.div key="pj-regimes" {...fadeUp} className="flex flex-col gap-3">
+                    <RadioOption
                       id="pj-lucro-real"
+                      name="pj-regime"
+                      value="lucro_real"
+                      currentValue={pjRegime}
                       label="Lucro Real"
-                      description="Permite dedução de até 2% do IR no ECA e Idoso."
-                      icon={CheckCircle2}
-                      selected={pjRegime === 'lucro_real'}
-                      onClick={() => setPjRegime('lucro_real')}
+                      description="Regime elegível. Empresas no Lucro Real podem deduzir até 2% do IRPJ devido (1% para ECA + 1% para o Fundo do Idoso)."
+                      allowed={true}
+                      onChange={setPjRegime}
                     />
-                    <SelectionCard
+                    <RadioOption
                       id="pj-lucro-presumido"
+                      name="pj-regime"
+                      value="lucro_presumido"
+                      currentValue={pjRegime}
                       label="Lucro Presumido"
-                      description="Não elegível para destinação de IR via fundos."
-                      icon={X}
-                      selected={pjRegime === 'lucro_presumido'}
-                      onClick={() => setPjRegime('lucro_presumido')}
+                      description="Regime não elegível. A legislação não permite a destinação incentivada de IRPJ para este regime."
+                      allowed={false}
+                      onChange={setPjRegime}
                     />
-                    <SelectionCard
+                    <RadioOption
                       id="pj-simples"
+                      name="pj-regime"
+                      value="simples"
+                      currentValue={pjRegime}
                       label="Simples Nacional"
-                      description="Regime unificado — não permite dedução incentivada."
-                      icon={X}
-                      selected={pjRegime === 'simples'}
-                      onClick={() => setPjRegime('simples')}
+                      description="Regime não elegível. O Simples Nacional unifica tributos e não contempla a destinação incentivada de IR."
+                      allowed={false}
+                      onChange={setPjRegime}
                     />
                   </motion.div>
                 )}
               </AnimatePresence>
 
+              {/* Alerta de bloqueio — vermelho proeminente */}
               <AnimatePresence>
                 {isBlocked && (
                   <BlockedWarning
                     message={
                       isPF
-                        ? 'A Declaração Simplificada não permite a destinação incentivada de IR para fundos sociais. Para utilizar este benefício fiscal, você deve optar pela Declaração Completa no momento da entrega da sua declaração.'
-                        : 'A destinação incentivada de IR para fundos como ECA e Idoso é permitida apenas para empresas no regime de Lucro Real (Lei 8.069/90 e Lei 10.741/03). Seu regime atual não contempla este benefício.'
+                        ? 'A Declaração Simplificada não permite a destinação incentivada de IR para fundos sociais (Lei 8.069/90 e Lei 10.741/03). Para utilizar este benefício, você deve optar pela Declaração Completa ao entregar sua declaração.'
+                        : 'A destinação incentivada de IRPJ é permitida exclusivamente para empresas no regime de Lucro Real (Lei 8.069/90 e Lei 10.741/03). O regime selecionado não contempla este benefício fiscal.'
                     }
                   />
                 )}
