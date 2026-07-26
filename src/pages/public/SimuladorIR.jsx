@@ -1,4 +1,5 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calculator,
@@ -267,37 +268,62 @@ function DestinationBucket({ icon: Icon, label, fund, value, colorClass }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export function SimuladorIR() {
-  // — Entity & model state
-  const [entity, setEntity]           = useState(null);          // 'pf' | 'pj'
-  const [pfModel, setPfModel]         = useState(null);          // 'completo' | 'simplificado'
-  const [pjRegime, setPjRegime]       = useState(null);          // 'lucro_real' | 'lucro_presumido' | 'simples'
-  const [inputMode, setInputMode]     = useState('estimate');    // 'estimate' | 'exact'
+  const navigate = useNavigate();
+
+  // ── States ──────────────────────────────────────────────────────────────────
+  const [entity, setEntity]           = useState(null);       // 'pf' | 'pj'
+  const [pfModel, setPfModel]         = useState(null);       // 'completo' | 'simplificado'
+  const [pjRegime, setPjRegime]       = useState(null);       // 'lucro_real' | 'lucro_presumido' | 'simples'
+  const [inputMode, setInputMode]     = useState('estimate'); // 'estimate' | 'exact'
   const [rawIncome, setRawIncome]     = useState('');
   const [rawTaxDue, setRawTaxDue]     = useState('');
-  const [income, setIncome]           = useState(0);             // float value
-  const [taxDue, setTaxDue]           = useState(0);             // float value
+  const [income, setIncome]           = useState(0);          // valor float da renda bruta
+  const [taxDue, setTaxDue]           = useState(0);          // valor float do IR calculado
   const [lgpdConsent, setLgpdConsent] = useState(false);
 
-  // — Derived flags
-  const isPF     = entity === 'pf';
-  const isPJ     = entity === 'pj';
-  const isBlocked = (isPF && pfModel === 'simplificado') ||
-                    (isPJ && pjRegime && pjRegime !== 'lucro_real');
+  // Resultado calculado — null quando vazio, objeto quando há resultado
+  const [calc, setCalc] = useState(null);
 
-  const modelSelected = (isPF && pfModel !== null) || (isPJ && pjRegime !== null);
-  const isEligible    = (isPF && pfModel === 'completo') || (isPJ && pjRegime === 'lucro_real');
+  // ── Derived flags ───────────────────────────────────────────────────────────
+  const isPF       = entity === 'pf';
+  const isPJ       = entity === 'pj';
+  const isBlocked  = (isPF && pfModel === 'simplificado') ||
+                     (isPJ && pjRegime && pjRegime !== 'lucro_real');
+  const isEligible = (isPF && pfModel === 'completo') || (isPJ && pjRegime === 'lucro_real');
 
-  // — Calculation (Bypassed for this iteration as requested: Do not calculate final result yet)
-  const calc = useMemo(() => {
-    // eslint-disable-next-line no-unreachable
-    console.log(entity, isPF, isBlocked, inputMode, income, taxDue, lgpdConsent, modelSelected);
-    return null;
-  }, [entity, isPF, isBlocked, inputMode, income, taxDue, lgpdConsent, modelSelected]);
+  // ── Motor de Cálculo em Tempo Real (useEffect) ──────────────────────────────
+  useEffect(() => {
+    // Pré-condições obrigatórias: LGPD aceito e regime elegível
+    if (!lgpdConsent || !isEligible) {
+      setCalc(null);
+      return;
+    }
 
-  // — Input handlers (Currency mask formatting and float parsing)
+    // Imposto Devido:
+    // 'estimate' → alíquota flat didática de 15% sobre renda bruta
+    // 'exact'    → valor exato digitado pelo usuário
+    const owedTax = inputMode === 'estimate' ? income * 0.15 : taxDue;
+
+    if (owedTax <= 0) {
+      setCalc(null);
+      return;
+    }
+
+    // Limite máximo de destinação por tipo de contribuinte:
+    // PF: 6% do IR devido (Lei 8.069/90 + Lei 10.741/03)
+    // PJ Lucro Real: 2% do IRPJ devido
+    const limitPct   = isPF ? 0.06 : 0.02;
+    const splitPct   = limitPct / 2; // 50/50 entre ECA e Fundo do Idoso
+    const totalLimit = owedTax * limitPct;
+    const ecaLimit   = owedTax * splitPct;
+    const idosoLimit = owedTax * splitPct;
+
+    setCalc({ owedTax, totalLimit, ecaLimit, idosoLimit, limitPct, splitPct, isEstimate: inputMode === 'estimate' });
+  }, [lgpdConsent, isEligible, inputMode, income, taxDue, isPF]);
+
+  // ── Input handlers (máscara BRL sem prefixo R$) ─────────────────────────────
   const handleIncomeChange = (e) => {
-    const val = e.target.value;
-    const masked = maskCurrencyNoPrefix(val);
+    const masked = maskCurrencyNoPrefix(e.target.value);
     setRawIncome(masked);
     setIncome(parseBRLNoPrefix(masked));
   };
@@ -616,146 +642,175 @@ export function SimuladorIR() {
               </AnimatePresence>
             </motion.div>
 
-            {/* CARD 4: Results Summary */}
-            <motion.div layout {...fadeUp} transition={{ delay: 0.2 }}
-              className={`md:col-span-1 rounded-[2rem] border p-6 flex flex-col gap-4 transition-all duration-default
+
+            {/* ═══════════════════════════════════════════════════════════════
+                CARD 4 — "Aha! Moment" — Resultado unificado (col-span-3)
+                • Estado vazio: ícone cinza + instrução
+                • Estado ativo: fundo verde vibrante, limite em tipografia massiva,
+                  dois sub-buckets (ECA + Idoso), barra de distribuição e CTA
+            ════════════════════════════════════════════════════════════════ */}
+            <motion.div
+              layout
+              {...fadeUp}
+              transition={{ delay: 0.2 }}
+              className={`md:col-span-3 rounded-[2rem] border overflow-hidden transition-all duration-500
                 ${calc
-                  ? 'bg-emerald text-white border-emerald shadow-xl shadow-emerald/25'
-                  : 'bg-white border-graphite/8 shadow-sm opacity-60'
+                  ? 'bg-emerald border-emerald shadow-2xl shadow-emerald/30'
+                  : 'bg-white border-graphite/8 shadow-sm'
                 }`}
             >
-              <div className="flex flex-col gap-1.5">
-                <span className={`text-xs font-semibold uppercase tracking-wider ${calc ? 'text-white/60' : 'text-graphite-light'}`}>
-                  Resultado
-                </span>
-                <h2 className={`font-display font-bold text-lg ${calc ? 'text-white' : 'text-graphite-dark'}`}>
-                  Potencial de Destino
-                </h2>
-              </div>
-
               <AnimatePresence mode="wait">
-                {!calc ? (
-                  <motion.div key="empty" {...fadeIn} className="flex flex-col items-center justify-center gap-3 flex-1 py-8">
-                    <Calculator className="w-10 h-10 text-graphite-light/40" />
-                    <p className="text-xs text-graphite-light text-center">
-                      Preencha os passos anteriores para ver o resultado da simulação.
-                    </p>
+
+                {/* ── Estado Vazio ──────────────────────────────────────────── */}
+                {!calc && (
+                  <motion.div
+                    key="empty"
+                    {...fadeIn}
+                    className="flex flex-col items-center justify-center gap-4 p-10 text-center"
+                  >
+                    <div className="w-16 h-16 rounded-3xl bg-ice flex items-center justify-center">
+                      <Calculator className="w-8 h-8 text-graphite-light/40" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs font-semibold text-graphite-light uppercase tracking-wider">Resultado</span>
+                      <h2 className="font-display font-bold text-lg text-graphite-dark">Potencial de Destino</h2>
+                      <p className="text-sm text-graphite-light mt-1 max-w-sm mx-auto">
+                        Preencha os passos anteriores para descobrir quanto do seu IR pode ser direcionado a projetos sociais.
+                      </p>
+                    </div>
                   </motion.div>
-                ) : (
-                  <motion.div key="result" {...fadeUp} className="flex flex-col gap-3">
-                    {calc.isEstimated && (
-                      <div className="flex gap-2 items-start bg-white/15 rounded-2xl p-3">
-                        <InfoIcon className="w-3.5 h-3.5 text-white/70 flex-shrink-0 mt-0.5" />
-                        <p className="text-xs text-white/80">Estimativa com alíquota flat de 15%. Consulte seu contador para valores reais.</p>
+                )}
+
+                {/* ── Estado Ativo: "Aha! Moment" ──────────────────────────── */}
+                {calc && (
+                  <motion.div key="result" {...fadeUp} className="flex flex-col">
+
+                    {/* Topo: headline + limite total + barra de distribuição */}
+                    <div className="p-6 md:p-8 flex flex-col gap-5">
+
+                      {/* Badge de estimativa */}
+                      {calc.isEstimate && (
+                        <div className="inline-flex items-center gap-2 bg-white/15 border border-white/25 rounded-full px-3.5 py-1.5 self-start">
+                          <InfoIcon className="w-3.5 h-3.5 text-white/70 flex-shrink-0" />
+                          <span className="text-xs text-white/80 font-medium">
+                            Estimativa com alíquota flat de 15% — consulte seu contador para o valor real
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Headline + valor massivo */}
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs font-semibold uppercase tracking-widest text-white/60">
+                          Resultado · Potencial de Destino
+                        </span>
+                        <span className="text-white/70 text-sm font-medium">
+                          IR de referência: {formatBRL(calc.owedTax)} · Limite de {(calc.limitPct * 100).toFixed(0)}%
+                        </span>
+                        {/* Valor principal em tipografia massiva */}
+                        <span className="font-display font-black text-5xl md:text-7xl text-white tracking-tight leading-none mt-1">
+                          {formatBRL(calc.totalLimit)}
+                        </span>
+                        <span className="text-sm text-white/70 font-medium mt-1">
+                          Você pode destinar esse valor a ONGs verificadas — sem custo adicional.
+                        </span>
                       </div>
-                    )}
 
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs text-white/60">Imposto de referência</span>
-                      <span className="font-display font-extrabold text-xl text-white">{formatBRL(calc.taxDue)}</span>
+                      {/* Barra visual de distribuição */}
+                      <div className="flex flex-col gap-2">
+                        <div className="flex justify-between text-xs text-white/60">
+                          <span>← Fundo da Criança (ECA)</span>
+                          <span>Fundo do Idoso →</span>
+                        </div>
+                        <div className="h-3 bg-white/20 rounded-full overflow-hidden flex">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: '50%' }}
+                            transition={{ duration: 0.7, ease: 'easeOut' }}
+                            className="h-full bg-blue-300 rounded-l-full"
+                          />
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: '50%' }}
+                            transition={{ duration: 0.7, ease: 'easeOut', delay: 0.12 }}
+                            className="h-full bg-rose-300 rounded-r-full"
+                          />
+                        </div>
+                        <div className="flex justify-between text-xs text-white/50">
+                          <span>{isPF ? '3% do IR' : '1% do IR'} → {formatBRL(calc.ecaLimit)}</span>
+                          <span>{formatBRL(calc.idosoLimit)} ← {isPF ? '3% do IR' : '1% do IR'}</span>
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="w-full h-px bg-white/20" />
+                    {/* Sub-buckets detalhados — fundo levemente contrastante */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/10">
+                      {/* ECA */}
+                      <div className="bg-blue-950/30 p-6 flex flex-col gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-blue-400/25 flex items-center justify-center flex-shrink-0">
+                            <Users className="w-4 h-4 text-blue-200" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-blue-200 uppercase tracking-wider">Fundo da Criança (ECA)</p>
+                            <p className="text-[11px] text-white/50">
+                              {isPF ? 'Até 3% do IR devido · Lei 8.069/90' : 'Até 1% do IRPJ · Lei 8.069/90'}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="font-display font-extrabold text-2xl text-white">
+                          {formatBRL(calc.ecaLimit)}
+                        </span>
+                        <p className="text-xs text-white/50 leading-relaxed">
+                          Apoia projetos de educação, proteção e atendimento a crianças e adolescentes em vulnerabilidade.
+                        </p>
+                      </div>
 
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs text-white/60">
-                        Limite total dedutível ({(calc.limitPct * 100).toFixed(0)}% do IR)
-                      </span>
-                      <span className="font-display font-extrabold text-3xl text-white">
-                        {formatBRL(calc.totalLimit)}
-                      </span>
+                      {/* Fundo do Idoso */}
+                      <div className="bg-rose-950/20 p-6 flex flex-col gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-rose-400/25 flex items-center justify-center flex-shrink-0">
+                            <Heart className="w-4 h-4 text-rose-200" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-rose-200 uppercase tracking-wider">Fundo do Idoso</p>
+                            <p className="text-[11px] text-white/50">
+                              {isPF ? 'Até 3% do IR devido · Lei 10.741/03' : 'Até 1% do IRPJ · Lei 10.741/03'}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="font-display font-extrabold text-2xl text-white">
+                          {formatBRL(calc.idosoLimit)}
+                        </span>
+                        <p className="text-xs text-white/50 leading-relaxed">
+                          Financia iniciativas de saúde, convivência e cuidado para idosos em situação de vulnerabilidade.
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="flex flex-col gap-1 mt-1">
-                      <span className="text-[11px] text-white/50">Sem custo adicional — já está no seu IR.</span>
-                      <span className="text-[11px] text-white/50">Base legal: Lei 8.069/90 (ECA) | Lei 10.741/03 (Idoso)</span>
+                    {/* CTA — Encontrar ONGs para Destinar */}
+                    <div className="bg-black/20 px-6 md:px-8 py-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      <div className="flex items-start gap-3 flex-1">
+                        <Sparkles className="w-5 h-5 text-yellow-300 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-white/80 leading-relaxed">
+                          <strong className="text-white">Pronto para destinar?</strong>{' '}
+                          Explore ONGs verificadas no DoaHub e direcione seu limite de{' '}
+                          <strong className="text-yellow-300">{formatBRL(calc.totalLimit)}</strong>.
+                        </p>
+                      </div>
+                      <button
+                        id="ir-sim-ong-cta"
+                        type="button"
+                        onClick={() => navigate('/explorar')}
+                        className="group flex items-center gap-2.5 bg-white text-emerald font-black text-sm px-6 py-3.5 rounded-2xl shadow-lg hover:bg-yellow-300 hover:text-emerald-dark transition-all duration-300 active:scale-95 whitespace-nowrap flex-shrink-0"
+                      >
+                        Encontrar ONGs para Destinar
+                        <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                      </button>
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
             </motion.div>
-
-            {/* CARD 5: Destination Buckets */}
-            <AnimatePresence>
-              {calc && (
-                <motion.div
-                  layout
-                  key="buckets"
-                  {...fadeUp}
-                  transition={{ delay: 0.05 }}
-                  className="md:col-span-3 bg-white rounded-[2rem] border border-graphite/8 p-6 shadow-sm flex flex-col gap-6"
-                >
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-xs font-semibold text-graphite-light uppercase tracking-wider">Distribuição Legal</span>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h2 className="font-display font-bold text-lg text-graphite-dark">
-                        Para onde destinar seu IR?
-                      </h2>
-                      {isPF && (
-                        <Tooltip content="A divisão de 3% + 3% se aplica especificamente a doações realizadas durante o período da declaração (março a maio). Doações ao longo do ano fiscal podem ter regras distintas. Consulte seu contador.">
-                          <span className="text-xs text-graphite-light cursor-pointer ml-1">(ver regra do período)</span>
-                        </Tooltip>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <DestinationBucket
-                      icon={Users}
-                      label="Fundo da Criança e do Adolescente"
-                      fund={isPF ? 'FDCA/ECA — até 3% do IR' : 'FDCA/ECA — até 1% do IR'}
-                      value={calc.ecaLimit}
-                      colorClass="border-blue-100 bg-blue-50/50 text-blue-900"
-                    />
-                    <DestinationBucket
-                      icon={Heart}
-                      label="Fundo do Idoso"
-                      fund={isPF ? 'FI — até 3% do IR' : 'FI — até 1% do IR'}
-                      value={calc.idosoLimit}
-                      colorClass="border-rose-100 bg-rose-50/50 text-rose-900"
-                    />
-                  </div>
-
-                  {/* Progress visual */}
-                  <div className="flex flex-col gap-2">
-                    <div className="flex justify-between items-center text-xs text-graphite-light">
-                      <span>Distribuição do limite</span>
-                      <span>{(calc.splitPct * 100).toFixed(0)}% + {(calc.splitPct * 100).toFixed(0)}% do IR devido</span>
-                    </div>
-                    <div className="h-3 bg-ice rounded-full overflow-hidden flex gap-0.5">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: '50%' }}
-                        transition={{ duration: 0.6, ease: 'easeOut' }}
-                        className="h-full bg-blue-400 rounded-l-full"
-                      />
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: '50%' }}
-                        transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}
-                        className="h-full bg-rose-400 rounded-r-full"
-                      />
-                    </div>
-                  </div>
-
-                  {/* CTA */}
-                  <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center bg-emerald/5 border border-emerald/20 rounded-2xl p-4">
-                    <Sparkles className="w-5 h-5 text-emerald flex-shrink-0" />
-                    <p className="text-sm text-graphite-dark flex-1">
-                      <strong className="text-emerald-dark">Pronto para destinar?</strong> Explore os projetos sociais aprovados no DoaHub e selecione onde deseja aplicar seu limite de {formatBRL(calc.totalLimit)}.
-                    </p>
-                    <a
-                      href="/explorar"
-                      id="ir-sim-explore-cta"
-                      className="flex items-center gap-2 bg-emerald text-white px-5 py-2.5 rounded-2xl font-bold text-sm hover:bg-emerald-dark transition-colors duration-default whitespace-nowrap flex-shrink-0"
-                    >
-                      Ver Projetos
-                      <ArrowRight className="w-4 h-4" />
-                    </a>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
 
             {/* CARD 6: Info / Disclaimer footer */}
             <motion.div layout {...fadeUp} transition={{ delay: 0.25 }}
