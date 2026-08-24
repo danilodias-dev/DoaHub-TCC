@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import { AuthProvider } from './context/AuthContext';
+import { DonorProvider } from './context/DonorContext';
 import { CampaignProvider } from './context/CampaignContext';
 import { NavHeader } from './components/layout/NavHeader';
 import { Footer } from './components/layout/Footer';
@@ -57,6 +59,7 @@ function AppRoutes() {
         <Route path="/transparencia" element={<Transparencia />} />
         <Route path="/ajuda" element={<Ajuda />} />
         <Route path="/simulador-ir" element={<SimuladorIR />} />
+        <Route path="/simulador" element={<SimuladorIR />} />
 
         {/* Auth */}
         <Route path="/login" element={<Login />} />
@@ -87,17 +90,22 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <CampaignProvider>
-      <BrowserRouter>
-        <ScrollToTop />
-        <div className="flex flex-col min-h-screen">
-          <NavHeader />
-          <main className="flex-grow">
-            <AppRoutes />
-          </main>
-          <Footer />
-        </div>
-      </BrowserRouter>
-    </CampaignProvider>
+    <AuthProvider>
+      <DonorProvider>
+        <CampaignProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <div className="flex flex-col min-h-screen">
+              <NavHeader />
+              <main className="flex-grow">
+                <AppRoutes />
+              </main>
+              <Footer />
+            </div>
+          </BrowserRouter>
+        </CampaignProvider>
+      </DonorProvider>
+    </AuthProvider>
   );
 }
+

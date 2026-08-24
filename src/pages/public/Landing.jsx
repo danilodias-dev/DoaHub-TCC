@@ -36,59 +36,77 @@ export function Landing() {
     >
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center pt-20 px-6">
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070&auto=format&fit=crop")' }}
-        >
-          <div className="absolute inset-0 bg-graphite/50 backdrop-blur-[2px]"></div>
+      <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center pt-24 pb-16 px-6 overflow-hidden">
+        {/* Background image optimized for LCP */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070&auto=format&fit=crop"
+            alt="Impacto Social DoaHub"
+            fetchPriority="high"
+            loading="eager"
+            className="w-full h-full object-cover object-center scale-105 animate-pulse-slow"
+          />
+          {/* Dark translucent overlay gradient (65% opacity guarantees WCAG AA text contrast) */}
+          <div className="absolute inset-0 bg-black/65 bg-gradient-to-t from-black/80 via-black/65 to-black/70 backdrop-blur-[1px]"></div>
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto w-full text-center flex flex-col items-center">
+          {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...motionTokens.slow, ease: "easeOut" }}
-            className="glass-dark rounded-full px-5 py-2 mb-8 flex items-center gap-2"
+            className="glass-dark rounded-full px-5 py-2 mb-8 flex items-center gap-2 border border-white/10"
           >
             <span className="w-2 h-2 rounded-full bg-glow animate-pulse"></span>
-            <span className="text-sm font-medium text-white">Junte-se à revolução da solidariedade transparente</span>
+            <span className="text-xs md:text-sm font-medium text-white/90">Destinação Fiscal sem Custos Adicionais</span>
           </motion.div>
 
+          {/* Headline <h1> */}
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...motionTokens.slow, delay: 0.1 }}
-            className="text-5xl md:text-7xl font-display font-extrabold text-white mb-6 tracking-tight leading-tight"
+            className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold text-white mb-6 tracking-tight leading-[1.15]"
           >
-            Sua doação com impacto<br/> <span className="text-glow">real</span> e <span className="text-emerald-light">rastreável</span>
+            Transforme seu <span className="text-emerald-light">Imposto de Renda</span> em impacto social <span className="text-glow">real e rastreável</span>.
           </motion.h1>
 
+          {/* Subtitle */}
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ ...motionTokens.slow, delay: 0.2 }}
-            className="text-lg md:text-xl text-ice-dark max-w-2xl mb-10"
+            className="text-base md:text-xl text-white/90 max-w-3xl mb-10 leading-relaxed font-medium"
           >
-            O DoaHub avalia rigorosamente e conecta ONGs confiáveis a doadores exigentes, entregando rastreabilidade total a cada centavo.
+            O DoaHub conecta você a ONGs homologadas e gera automaticamente suas guias de destinação fiscal — sem custos e com rastreabilidade total.
           </motion.p>
 
+          {/* Dual Fiscal CTAs */}
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ ...motionTokens.slow, delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-4"
+            className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto max-w-md sm:max-w-none"
           >
-            <Link to="/explorar">
-              <PremiumButton size="lg" className="w-full sm:w-auto">
-                Explorar Campanhas <ArrowRight className="w-5 h-5 ml-1" />
-              </PremiumButton>
+            {/* Primary CTA */}
+            <Link to="/simulador" className="w-full sm:w-auto">
+              <button 
+                type="button"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald hover:bg-emerald-light text-white font-bold text-base md:text-lg px-8 py-4 rounded-full shadow-xl shadow-emerald/30 transition-all duration-default active:scale-95 group"
+              >
+                Simular Benefício Fiscal <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+              </button>
             </Link>
             
-            <Link to="/ong/onboarding/1">
-              <PremiumButton variant="glass" size="lg" className="w-full sm:w-auto text-white hover:text-graphite border-white/20">
-                Sou uma ONG
-              </PremiumButton>
+            {/* Secondary CTA */}
+            <Link to="/explorar" className="w-full sm:w-auto">
+              <button
+                type="button"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border-2 border-white/30 hover:border-white/60 text-white hover:bg-white/10 backdrop-blur-sm font-semibold text-base md:text-lg px-8 py-4 rounded-full transition-all duration-default active:scale-95"
+              >
+                Explorar Causas
+              </button>
             </Link>
           </motion.div>
         </div>

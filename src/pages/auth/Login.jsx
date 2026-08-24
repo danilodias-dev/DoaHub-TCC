@@ -1,18 +1,21 @@
 import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff, Code, Globe, ArrowLeft, Heart } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Code, Globe, ArrowLeft } from 'lucide-react';
 import { Logo } from '../../components/ui/Logo';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { motionTokens } from '../../utils/motion';
+import { useAuth } from '../../context/AuthContext';
 
 export function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Simulação de login - redireciona para a home do doador
+    // Simula autenticação — seta o estado de auth e redireciona para o painel do doador
+    login({ name: 'João Silva', email: 'joao@email.com' });
     navigate('/doador');
   };
 
@@ -66,7 +69,7 @@ export function Login() {
           <div className="flex items-center gap-6 text-white/50 text-sm font-medium">
             <span>© 2026 DoaHub Platform</span>
             <div className="w-1 h-1 bg-white/20 rounded-full"></div>
-            <span>Privacidade & Segurança</span>
+            <span>Privacidade &amp; Segurança</span>
           </div>
         </div>
       </div>
