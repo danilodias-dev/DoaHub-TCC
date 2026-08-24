@@ -47,7 +47,7 @@ export function Landing() {
             className="w-full h-full object-cover object-center scale-105 animate-pulse-slow"
           />
           {/* Dark translucent overlay gradient (65% opacity guarantees WCAG AA text contrast) */}
-          <div className="absolute inset-0 bg-black/65 bg-gradient-to-t from-black/80 via-black/65 to-black/70 backdrop-blur-[1px]"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/45 to-black/55 backdrop-blur-[1px]"></div>
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto w-full text-center flex flex-col items-center">
@@ -67,7 +67,7 @@ export function Landing() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...motionTokens.slow, delay: 0.1 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold text-white mb-6 tracking-tight leading-[1.15]"
+            className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] mb-6 tracking-tight leading-[1.15]"
           >
             Transforme seu <span className="text-emerald-light">Imposto de Renda</span> em impacto social <span className="text-glow">real e rastreável</span>.
           </motion.h1>
@@ -77,7 +77,7 @@ export function Landing() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ ...motionTokens.slow, delay: 0.2 }}
-            className="text-base md:text-xl text-white/90 max-w-3xl mb-10 leading-relaxed font-medium"
+            className="text-base md:text-xl text-white/90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] max-w-3xl mb-10 leading-relaxed font-medium"
           >
             O DoaHub conecta você a ONGs homologadas e gera automaticamente suas guias de destinação fiscal — sem custos e com rastreabilidade total.
           </motion.p>
