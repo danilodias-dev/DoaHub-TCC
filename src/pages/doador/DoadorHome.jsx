@@ -156,8 +156,58 @@ export function DoadorHome() {
             </PremiumButton>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[800px]">
+          {/* Mobile: Card List (< md) */}
+          <div className="flex flex-col divide-y divide-graphite/5 md:hidden">
+            {donations.map(donation => (
+              <div key={donation.id} className="py-4 flex flex-col gap-3">
+                <div className="flex justify-between items-start gap-3">
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <p className="font-bold text-graphite-dark text-sm truncate">{donation.ngo}</p>
+                    <p className="text-xs text-graphite-light">{new Date(donation.date).toLocaleDateString('pt-BR')}</p>
+                    <p className="text-xs text-graphite-light/70 truncate">{donation.fund}</p>
+                  </div>
+                  <span className={`flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
+                    donation.status === 'Consolidado' ? 'bg-emerald/10 text-emerald' : 'bg-yellow-100 text-yellow-700'
+                  }`}>
+                    {donation.status === 'Consolidado' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertCircle className="w-3.5 h-3.5" />}
+                    {donation.status}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center pt-1">
+                  <span className="font-black text-emerald text-base">{formatCurrency(donation.amount)}</span>
+                  <div className="flex items-center gap-2">
+                    {donation.impactReportId && (
+                      <button
+                        onClick={() => setSelectedReportId(donation.impactReportId)}
+                        className="text-xs font-bold text-emerald px-3 py-2 rounded-lg hover:bg-emerald/5 transition-colors min-h-[36px]"
+                      >
+                        Prestação de Contas
+                      </button>
+                    )}
+                    {donation.receiptUrl ? (
+                      <a
+                        href={donation.receiptUrl}
+                        download
+                        className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center text-graphite-light hover:text-emerald hover:bg-emerald/5 rounded-xl transition-colors"
+                        title="Baixar Comprovante (PDF)"
+                        aria-label="Baixar Comprovante"
+                      >
+                        <FileText className="w-5 h-5" />
+                      </a>
+                    ) : (
+                      <span className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center text-graphite/20 cursor-not-allowed" title="Comprovante indisponível">
+                        <FileText className="w-5 h-5" />
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: Tabela (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[700px]">
               <thead>
                 <tr className="border-b border-graphite/5">
                   <th className="py-4 px-4 text-xs font-bold text-graphite-light uppercase tracking-wider">Data</th>
@@ -186,7 +236,7 @@ export function DoadorHome() {
                       </span>
                     </td>
                     <td className="py-4 px-4">
-                      <div className="flex items-center justify-end gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center justify-end gap-2">
                          {donation.impactReportId && (
                             <button 
                               onClick={() => setSelectedReportId(donation.impactReportId)}
@@ -196,7 +246,7 @@ export function DoadorHome() {
                             </button>
                          )}
                          {donation.receiptUrl ? (
-                           <a href={donation.receiptUrl} download className="p-2 text-graphite-light hover:text-emerald hover:bg-emerald/5 rounded-xl transition-colors" title="Baixar Comprovante (PDF)">
+                           <a href={donation.receiptUrl} download className="p-2 text-graphite-light hover:text-emerald hover:bg-emerald/5 rounded-xl transition-colors" title="Baixar Comprovante (PDF)" aria-label="Baixar Comprovante">
                              <FileText className="w-5 h-5" />
                            </a>
                          ) : (

@@ -33,7 +33,7 @@ export function Checkout() {
       animate="animate"
       exit="exit"
       transition={motionTokens.page}
-      className="min-h-screen bg-ice pt-24 pb-20 px-6"
+      className="min-h-screen bg-ice pt-6 pb-20 px-6"
     >
       
       {/* Checkout Navbar */}

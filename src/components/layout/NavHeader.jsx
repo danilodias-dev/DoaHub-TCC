@@ -14,8 +14,8 @@ const GUEST_LINKS = [
   { to: '/explorar',     label: 'Explorar' },
   { to: '/simulador-ir', label: 'Simulador de IR' },
   { to: '/quem-somos',  label: 'Quem Somos' },
-  { to: '/transparencia', label: 'Transparência' },
-  { to: '/ajuda',        label: 'Ajuda' },
+  { to: '/transparencia', label: 'Transparência', mdHidden: true },
+  { to: '/ajuda',        label: 'Ajuda',           mdHidden: true },
 ];
 
 /**
@@ -27,8 +27,8 @@ const DONOR_LINKS = [
   { to: '/simulador-ir', label: 'Simulador de IR' },
   { to: '/doador',       label: 'Meu Painel' },
   { to: '/quem-somos',  label: 'Quem Somos' },
-  { to: '/transparencia', label: 'Transparência' },
-  { to: '/ajuda',        label: 'Ajuda' },
+  { to: '/transparencia', label: 'Transparência', mdHidden: true },
+  { to: '/ajuda',        label: 'Ajuda',           mdHidden: true },
 ];
 
 /**
@@ -64,11 +64,13 @@ const MOBILE_DONOR_LINKS = [
  * O underline com layoutId="activeNavTab" faz o indicador deslizar
  * suavemente entre abas usando Framer Motion layout animation.
  */
-function NavItem({ to, label, isActive }) {
+function NavItem({ to, label, isActive, mdHidden }) {
   return (
     <Link
       to={to}
-      className={`relative pb-1 font-medium transition-colors duration-default ${
+      className={`relative pb-1 font-medium transition-colors duration-default whitespace-nowrap ${
+        mdHidden ? 'hidden lg:inline-block' : 'inline-block'
+      } ${
         isActive ? 'text-emerald' : 'text-graphite-light hover:text-emerald'
       }`}
     >
@@ -200,12 +202,13 @@ export function NavHeader() {
           <Logo />
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-4 lg:gap-7">
             {navLinks.map(link => (
               <NavItem
                 key={link.to}
                 to={link.to}
                 label={link.label}
+                mdHidden={link.mdHidden}
                 isActive={pathname === link.to || (link.to !== '/' && pathname.startsWith(link.to)) || (link.to === '/simulador-ir' && pathname === '/simulador')}
               />
             ))}
