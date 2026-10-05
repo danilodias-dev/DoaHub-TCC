@@ -45,7 +45,12 @@ export function AuthProvider({ children }) {
    * @param {{ name: string, email: string }} userData
    */
   const login = useCallback((userData) => {
-    const sessionUser = { name: userData.name, email: userData.email };
+    const sessionUser = { 
+      name: userData.name, 
+      email: userData.email,
+      role: userData.role || 'DONOR',
+      type: userData.type || 'INDIVIDUAL',
+    };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionUser));
     setUser(sessionUser);
   }, []);

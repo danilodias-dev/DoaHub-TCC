@@ -157,22 +157,6 @@ export function Ajuda() {
           </div>
           <div className="relative z-10 flex flex-wrap justify-center gap-4">
 
-            {/* O NOVO BOTÃO FOI INSERIDO AQUI */}
-            <button
-              type="button"
-              onClick={() => {
-                console.log("Triggering Hubi...");
-                if (typeof window !== 'undefined' && window.n8nChat && typeof window.n8nChat.toggle === 'function') {
-                    window.n8nChat.toggle();
-                } else {
-                    alert("A Hubi está conectando ao servidor. Aguarde um instante ou recarregue a página (Ctrl + Shift + R).");
-                }
-              }}
-              className="bg-emerald-600 text-white px-8 py-3 rounded-full font-bold hover:bg-emerald-700 transition-all shadow-md active:scale-95"
-            >
-              Abrir Chat ao Vivo
-            </button>
-
             <PremiumButton variant="glass" size="lg" className="border-white/10 hover:bg-white/5 text-white">Enviar E-mail</PremiumButton>
           </div>
         </div>

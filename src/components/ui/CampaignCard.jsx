@@ -25,8 +25,9 @@ export function CampaignCard({ id, title, ongName, location, imageUrl, raisedAmo
           )}
           <div className="absolute top-3 right-3 z-10">
             <button 
-              className="bg-white/80 backdrop-blur-sm w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white transition-all shadow-sm"
+              className="bg-white/80 backdrop-blur-sm w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white transition-all shadow-sm"
               onClick={(e) => e.preventDefault()} // Prevent navigation when clicking heart
+              aria-label="Favoritar campanha"
             >
               <Heart className="w-4 h-4" />
             </button>
@@ -58,7 +59,14 @@ export function CampaignCard({ id, title, ongName, location, imageUrl, raisedAmo
               </div>
             </div>
             
-            <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
+            <div 
+              role="progressbar"
+              aria-valuenow={progressPercentage}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`${progressPercentage}% da meta arrecadada`}
+              className="w-full h-2 rounded-full bg-gray-100 overflow-hidden"
+            >
               <div 
                 className="h-full bg-green-600 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${progressPercentage}%` }}

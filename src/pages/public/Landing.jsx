@@ -36,7 +36,7 @@ export function Landing() {
     >
       
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center pt-24 pb-16 px-6 overflow-hidden">
+      <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center pt-20 md:pt-24 pb-12 md:pb-16 px-4 md:px-6 overflow-hidden">
         {/* Background image optimized for LCP */}
         <div className="absolute inset-0 z-0">
           <img 
@@ -47,7 +47,7 @@ export function Landing() {
             className="w-full h-full object-cover object-center scale-105 animate-pulse-slow"
           />
           {/* Dark translucent overlay gradient (65% opacity guarantees WCAG AA text contrast) */}
-          <div className="absolute inset-0 bg-black/65 bg-gradient-to-t from-black/80 via-black/65 to-black/70 backdrop-blur-[1px]"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/45 to-black/55 backdrop-blur-[1px]"></div>
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto w-full text-center flex flex-col items-center">
@@ -56,7 +56,7 @@ export function Landing() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...motionTokens.slow, ease: "easeOut" }}
-            className="glass-dark rounded-full px-5 py-2 mb-8 flex items-center gap-2 border border-white/10"
+            className="glass-dark rounded-full px-4 md:px-5 py-2 mb-6 md:mb-8 flex items-center gap-2 border border-white/10"
           >
             <span className="w-2 h-2 rounded-full bg-glow animate-pulse"></span>
             <span className="text-xs md:text-sm font-medium text-white/90">Destinação Fiscal sem Custos Adicionais</span>
@@ -67,7 +67,7 @@ export function Landing() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...motionTokens.slow, delay: 0.1 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold text-white mb-6 tracking-tight leading-[1.15]"
+            className="text-[clamp(1.85rem,5vw+0.5rem,4.5rem)] font-display font-extrabold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] mb-4 md:mb-6 tracking-tight leading-[1.12]"
           >
             Transforme seu <span className="text-emerald-light">Imposto de Renda</span> em impacto social <span className="text-glow">real e rastreável</span>.
           </motion.h1>
@@ -77,7 +77,7 @@ export function Landing() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ ...motionTokens.slow, delay: 0.2 }}
-            className="text-base md:text-xl text-white/90 max-w-3xl mb-10 leading-relaxed font-medium"
+            className="text-base md:text-xl text-white/90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] max-w-3xl mb-8 md:mb-10 leading-relaxed font-medium"
           >
             O DoaHub conecta você a ONGs homologadas e gera automaticamente suas guias de destinação fiscal — sem custos e com rastreabilidade total.
           </motion.p>
@@ -113,7 +113,7 @@ export function Landing() {
       </section>
 
       {/* Trust Badges */}
-      <section className="bg-white py-20 px-6 border-b border-ice">
+      <section className="bg-white py-16 md:py-20 px-6 border-b border-ice">
         <div className="max-w-7xl mx-auto flex flex-col items-center">
           <p className="text-sm font-bold text-graphite-light mb-12 tracking-widest uppercase">Por que escolher o DoaHub?</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full max-w-5xl">
@@ -142,9 +142,9 @@ export function Landing() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-ice py-20 px-6">
+      <section className="bg-ice py-16 md:py-20 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
             {stats.map((stat, i) => (
               <motion.div 
                 key={i}
@@ -152,19 +152,19 @@ export function Landing() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="flex flex-col items-center text-center p-8 bg-white rounded-[2.5rem] shadow-sm border border-graphite/5 hover:shadow-xl hover:shadow-emerald/5 hover:-translate-y-1 transition-all duration-page"
+                className="flex flex-col items-center text-center p-5 md:p-8 bg-white rounded-2xl md:rounded-[2.5rem] shadow-sm border border-graphite/5 hover:shadow-xl hover:shadow-emerald/5 hover:-translate-y-1 transition-all duration-page"
               >
-                <div className="w-16 h-16 rounded-2xl bg-emerald/5 flex items-center justify-center mb-4">
-                  <stat.icon className="w-8 h-8 text-emerald" />
+                <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-emerald/5 flex items-center justify-center mb-3 md:mb-4">
+                  <stat.icon className="w-6 h-6 md:w-8 md:h-8 text-emerald" />
                 </div>
                 <div className="flex items-baseline gap-1 mb-1">
-                  {stat.prefix && <span className="text-xl font-bold text-emerald">{stat.prefix}</span>}
-                  <span className="text-4xl md:text-5xl font-display font-black text-graphite-dark">
+                  {stat.prefix && <span className="text-lg md:text-xl font-bold text-emerald">{stat.prefix}</span>}
+                  <span className="text-3xl md:text-5xl font-display font-black text-graphite-dark">
                     {stat.value}
                   </span>
-                  {stat.suffix && <span className="text-xl font-bold text-emerald">{stat.suffix}</span>}
+                  {stat.suffix && <span className="text-lg md:text-xl font-bold text-emerald">{stat.suffix}</span>}
                 </div>
-                <span className="text-xs font-black text-graphite-light uppercase tracking-[0.2em]">{stat.label}</span>
+                <span className="text-[10px] md:text-xs font-black text-graphite-light uppercase tracking-[0.15em] md:tracking-[0.2em]">{stat.label}</span>
               </motion.div>
             ))}
           </div>
