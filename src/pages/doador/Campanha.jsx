@@ -64,7 +64,7 @@ export function Campanha() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full h-[400px] md:h-[500px] bg-white rounded-3xl overflow-hidden shadow-sm"
+            className="w-full aspect-video md:aspect-[21/9] bg-white rounded-3xl overflow-hidden shadow-sm"
           >
             <img src={proj.coverUrl} alt="Cover" className="w-full h-full object-cover" />
           </motion.div>
@@ -139,7 +139,14 @@ export function Campanha() {
 
             {/* Progress Track */}
             <div className="flex flex-col gap-2">
-              <div className="w-full h-3 rounded-full bg-ice-dark overflow-hidden">
+              <div
+                role="progressbar"
+                aria-valuenow={progressPercentage}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={`${progressPercentage}% da meta de arrecadação`}
+                className="w-full h-3 rounded-full bg-ice-dark overflow-hidden"
+              >
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercentage}%` }}

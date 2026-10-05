@@ -141,10 +141,28 @@ export function DashboardONG() {
          </header>
 
          {/* Scrollable Area — Tab Content */}
-         <div className="p-4 lg:p-8 pb-24 lg:pb-8 flex flex-col gap-6 lg:gap-8 max-w-7xl">
+         <div className="p-4 lg:p-8 pb-24 lg:pb-8 flex flex-col gap-6 lg:gap-8 max-w-7xl mx-auto w-full">
             {tabContent}
          </div>
       </main>
+
+      {/* FAB Nova Campanha — visível apenas em telas menores que lg */}
+      <button
+        onClick={handleOpenNewCampaign}
+        className={`lg:hidden fixed bottom-20 right-5 z-40 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all active:scale-95 ${
+          !orgProfile.isVerified
+            ? 'bg-amber-500 shadow-amber-500/40 text-white'
+            : 'bg-emerald shadow-emerald/40 text-white'
+        }`}
+        aria-label={!orgProfile.isVerified ? 'Concluir Cadastro' : 'Nova Campanha'}
+        title={!orgProfile.isVerified ? 'Concluir Cadastro' : 'Nova Campanha'}
+      >
+        {!orgProfile.isVerified ? (
+          <AlertTriangle className="w-6 h-6" />
+        ) : (
+          <Plus className="w-6 h-6" />
+        )}
+      </button>
 
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-graphite/5 z-50 px-2 py-2 flex justify-around items-center">
@@ -157,7 +175,7 @@ export function DashboardONG() {
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl text-[10px] font-bold transition-colors ${activeTab === item.id ? 'text-emerald' : 'text-graphite-light'}`}
+            className={`flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-xl text-[10px] font-bold transition-colors min-w-[56px] min-h-[48px] ${activeTab === item.id ? 'text-emerald' : 'text-graphite-light'}`}
           >
             <item.icon className="w-5 h-5" />
             {item.label}

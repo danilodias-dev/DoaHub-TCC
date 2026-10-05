@@ -75,11 +75,11 @@ export function Login() {
       </div>
 
       {/* Right Side: Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-16 bg-ice/30">
+      <div className="w-full lg:w-1/2 flex items-start lg:items-center justify-center px-6 py-10 md:px-16 md:py-16 bg-ice/30 overflow-y-auto">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md flex flex-col gap-8"
+          className="w-full max-w-md flex flex-col gap-8 pb-8"
         >
           {/* Mobile Logo Only */}
           <div className="lg:hidden flex flex-col items-center gap-4 mb-2">
@@ -144,10 +144,10 @@ export function Login() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 mt-1 ml-1 cursor-pointer group">
-              <input type="checkbox" id="remember" className="w-4 h-4 rounded border-graphite/20 text-emerald focus:ring-emerald cursor-pointer" />
-              <label htmlFor="remember" className="text-sm font-medium text-graphite-light group-hover:text-graphite cursor-pointer transition-colors">Lembrar de mim por 30 dias</label>
-            </div>
+            <label htmlFor="remember" className="flex items-center gap-3 mt-1 cursor-pointer group p-1.5 -ml-1.5 rounded-xl hover:bg-ice transition-colors">
+              <input type="checkbox" id="remember" className="w-5 h-5 rounded border-graphite/20 text-emerald focus:ring-emerald cursor-pointer flex-shrink-0" />
+              <span className="text-sm font-medium text-graphite-light group-hover:text-graphite transition-colors">Lembrar de mim por 30 dias</span>
+            </label>
 
             <PremiumButton type="submit" size="lg" className="mt-4 shadow-xl shadow-emerald/30">
               Entrar na Plataforma
