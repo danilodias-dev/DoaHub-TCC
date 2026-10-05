@@ -226,7 +226,7 @@ export function NavHeader() {
                 <ProfileDropdown user={user} onLogout={handleLogout} />
               </div>
             ) : (
-              /* Guest: botões Entrar + Cadastrar ONG */
+              /* Guest: botões Entrar + Cadastre-se */
               <>
                 <Link
                   to="/login"
@@ -238,7 +238,7 @@ export function NavHeader() {
                   to="/cadastro"
                   className="hidden md:inline-flex items-center px-5 py-2.5 bg-emerald text-white rounded-full font-semibold hover:bg-emerald-dark transition-all duration-default shadow-md shadow-emerald/20 text-sm whitespace-nowrap"
                 >
-                  Cadastrar ONG
+                  Cadastre-se
                 </Link>
               </>
             )}
@@ -339,7 +339,7 @@ export function NavHeader() {
                       to="/cadastro"
                       className="px-4 py-4 bg-emerald text-white rounded-2xl font-black text-center shadow-xl shadow-emerald/20 active:scale-95 transition-all"
                     >
-                      Cadastrar ONG
+                      Cadastre-se
                     </Link>
                   </>
                 )}

@@ -1,16 +1,59 @@
 import { motion } from 'framer-motion';
 import { Mail, Lock, User, ShieldCheck, ArrowLeft, Heart, CheckCircle2 } from 'lucide-react';
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { PremiumButton } from '../../components/ui/PremiumButton';
+import { ProfileSwitcher } from '../../components/auth/ProfileSwitcher';
+import { useAuth } from '../../context/AuthContext';
 import { motionTokens } from '../../utils/motion';
 
 export function Cadastro() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+
+  // Preserva dados vindos da transição com a rota de ONG
+  const [name, setName] = useState(location.state?.name || location.state?.nome || '');
+  const [email, setEmail] = useState(location.state?.email || '');
+  const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    if (location.state?.name || location.state?.nome) {
+      setName(prev => prev || location.state.name || location.state.nome);
+    }
+    if (location.state?.email) {
+      setEmail(prev => prev || location.state.email);
+    }
+  }, [location.state]);
+
+  const handleRoleChange = (role) => {
+    if (role === 'ong') {
+      // Navega para o cadastro de ONG preservando os campos já preenchidos
+      navigate('/cadastrar-ong', { 
+        state: { 
+          nome: name, 
+          email: email 
+        } 
+      });
+    }
+  };
 
   const handleRegister = (e) => {
     e.preventDefault();
-    // Simulação de cadastro - redireciona para a home do doador
+    
+    // Payload estruturado explicitamente com role do usuário
+    const payload = {
+      name: name.trim(),
+      email: email.trim(),
+      password,
+      role: 'DONOR',
+      type: 'INDIVIDUAL',
+    };
+
+    // Atualiza o estado de autenticação com o payload do doador
+    login(payload);
+
+    // Redireciona para o painel do doador
     navigate('/doador');
   };
 
@@ -85,10 +128,10 @@ export function Cadastro() {
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="w-full max-w-md flex flex-col gap-8"
+          className="w-full max-w-md flex flex-col gap-6"
         >
           {/* Mobile UI Only */}
-          <div className="lg:hidden flex flex-col items-center gap-2 mb-4">
+          <div className="lg:hidden flex flex-col items-center gap-2 mb-2">
             <div className="w-12 h-12 rounded-2xl bg-emerald text-white flex items-center justify-center shadow-xl">
               <Heart className="w-7 h-7" />
             </div>
@@ -100,7 +143,24 @@ export function Cadastro() {
             <p className="text-graphite-light font-medium">Já possui uma conta? <Link to="/login" className="text-emerald hover:underline font-bold">Faça login</Link></p>
           </div>
 
-          <form onSubmit={handleRegister} className="flex flex-col gap-5">
+          {/* Profile Switcher (Role Selector / Tab Group) */}
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-bold text-graphite-light uppercase tracking-widest ml-1">
+              Como deseja se cadastrar?
+            </label>
+            <ProfileSwitcher 
+              activeRole="donor" 
+              onSelectRole={handleRoleChange} 
+            />
+          </div>
+
+          <form 
+            onSubmit={handleRegister} 
+            id="panel-donor" 
+            role="tabpanel" 
+            aria-labelledby="tab-donor"
+            className="flex flex-col gap-5"
+          >
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-bold text-graphite-light uppercase tracking-widest ml-1">Nome Completo</label>
               <div className="relative">
@@ -109,7 +169,9 @@ export function Cadastro() {
                   type="text" 
                   placeholder="Seu nome" 
                   required
-                  className="w-full bg-white border border-graphite/5 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-emerald/50 focus:ring-4 focus:ring-emerald/5 transition-all font-medium"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-white border border-graphite/5 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-emerald/50 focus:ring-4 focus:ring-emerald/5 transition-all font-medium min-h-[48px]"
                 />
               </div>
             </div>
@@ -122,7 +184,9 @@ export function Cadastro() {
                   type="email" 
                   placeholder="exemplo@email.com" 
                   required
-                  className="w-full bg-white border border-graphite/5 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-emerald/50 focus:ring-4 focus:ring-emerald/5 transition-all font-medium"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-white border border-graphite/5 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-emerald/50 focus:ring-4 focus:ring-emerald/5 transition-all font-medium min-h-[48px]"
                 />
               </div>
             </div>
@@ -135,20 +199,22 @@ export function Cadastro() {
                   type="password" 
                   placeholder="Crie uma senha forte" 
                   required
-                  className="w-full bg-white border border-graphite/5 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-emerald/50 focus:ring-4 focus:ring-emerald/5 transition-all font-medium"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-white border border-graphite/5 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-emerald/50 focus:ring-4 focus:ring-emerald/5 transition-all font-medium min-h-[48px]"
                 />
               </div>
             </div>
 
-            <div className="bg-emerald/5 p-4 rounded-2xl flex gap-3 items-start border border-emerald/10 mt-2">
-              <ShieldCheck className="w-5 h-5 text-emerald mt-0.5" />
+            <div className="bg-emerald/5 p-4 rounded-2xl flex gap-3 items-start border border-emerald/10 mt-1">
+              <ShieldCheck className="w-5 h-5 text-emerald mt-0.5 flex-shrink-0" />
               <p className="text-xs text-graphite-light font-medium leading-relaxed">
-                Ao se cadastrar, você concorda com nossos <span className="text-emerald font-bold cursor-pointer">Termos de Uso</span> e nossa <span className="text-emerald font-bold cursor-pointer">Política de Privacidade</span> sob a LGPD.
+                Ao se cadastrar como doador, você concorda com nossos <span className="text-emerald font-bold cursor-pointer">Termos de Uso</span> e nossa <span className="text-emerald font-bold cursor-pointer">Política de Privacidade</span> sob a LGPD.
               </p>
             </div>
 
-            <PremiumButton type="submit" size="lg" className="mt-4 shadow-xl shadow-emerald/20">
-              Finalizar Cadastro
+            <PremiumButton type="submit" size="lg" className="mt-3 shadow-xl shadow-emerald/20 min-h-[48px]">
+              Finalizar Cadastro como Doador
             </PremiumButton>
           </form>
 
