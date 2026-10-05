@@ -64,6 +64,7 @@ function AppRoutes() {
         {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/cadastrar-ong" element={<OnboardingStep1 />} />
 
         {/* Doador e Exploração */}
         <Route path="/doador" element={<DoadorHome />} />

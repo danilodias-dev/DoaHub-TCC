@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -75,16 +75,35 @@ function parseBRLNoPrefix(str) {
 
 function Tooltip({ children, content }) {
   const [open, setOpen] = useState(false);
+  const timerRef = useRef(null);
+
+  const openTooltip = () => {
+    clearTimeout(timerRef.current);
+    setOpen(true);
+  };
+
+  const scheduleClose = () => {
+    timerRef.current = setTimeout(() => {
+      setOpen(false);
+    }, 200);
+  };
+
+  const toggleTooltip = () => {
+    setOpen(prev => !prev);
+  };
+
   return (
     <span className="relative inline-flex items-center">
       <button
         type="button"
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
-        className="ml-1.5 text-graphite-light hover:text-emerald transition-colors duration-fast focus:outline-none"
+        onClick={toggleTooltip}
+        onMouseEnter={openTooltip}
+        onMouseLeave={scheduleClose}
+        onFocus={openTooltip}
+        onBlur={scheduleClose}
+        className="ml-1.5 w-6 h-6 flex items-center justify-center text-graphite-light hover:text-emerald transition-colors duration-fast focus:outline-none rounded"
         aria-label="Informação adicional"
+        aria-expanded={open}
       >
         <InfoIcon className="w-3.5 h-3.5" />
       </button>
