@@ -118,9 +118,9 @@ export function Landing() {
           <p className="text-sm font-bold text-graphite-light mb-12 tracking-widest uppercase">Por que escolher o DoaHub?</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full max-w-5xl">
             {[
-              { icon: ShieldCheck, title: "Curadoria Rigorosa", desc: "Apenas instituições com auditoria fiscal e social ativa passam pelo nosso crivo." },
-              { icon: Globe2, title: "Transparência Absoluta", desc: "Painéis de prestação de contas visíveis publicamente para cada real doado." },
-              { icon: HeartHandshake, title: "Impacto Imediato", desc: "Repasse sem fricção financeira para que os recursos cheguem onde mais importa." }
+              { icon: ShieldCheck, title: "Curadoria Rigorosa", desc: "Apenas instituições com auditoria fiscal e social ativa passam pelo nosso crivo de homologação." },
+              { icon: Globe2, title: "Transparência Absoluta", desc: "Painéis de prestação de contas visíveis publicamente com relatórios e indicadores de impacto." },
+              { icon: HeartHandshake, title: "Arquitetura Non-Custodial", desc: "Sem retenção de valores: destinação direta do seu IR para contas de Fundos Públicos e ONGs." }
             ].map((feature, i) => (
               <motion.div 
                 key={i} 
@@ -167,6 +167,12 @@ export function Landing() {
                 <span className="text-[10px] md:text-xs font-black text-graphite-light uppercase tracking-[0.15em] md:tracking-[0.2em]">{stat.label}</span>
               </motion.div>
             ))}
+          </div>
+          
+          <div className="mt-8 text-center">
+            <p className="text-xs text-graphite-light font-medium opacity-75">
+              * Indicadores e métricas ilustrativos para fins de validação do projeto acadêmico (TCC). O DoaHub opera sob modelo non-custodial.
+            </p>
           </div>
         </div>
       </section>

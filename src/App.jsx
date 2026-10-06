@@ -69,6 +69,7 @@ function AppRoutes() {
         {/* Doador e Exploração */}
         <Route path="/doador" element={<DoadorHome />} />
         <Route path="/explorar" element={<ExplorarCampanhas />} />
+        <Route path="/campanhas" element={<ExplorarCampanhas />} />
         <Route path="/campanha/:id" element={<Campanha />} />
         <Route path="/checkout/:id" element={<Checkout />} />
         <Route path="/obrigado" element={<Obrigado />} />
