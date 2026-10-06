@@ -17,7 +17,11 @@ import {
   DollarSign,
   TrendingUp,
   ArrowRight,
+  Sliders,
+  RotateCcw,
+  Percent,
 } from 'lucide-react';
+import { DarfInstructionCard } from '../../components/fiscal/DarfInstructionCard';
 
 // ─── Animation Tokens ────────────────────────────────────────────────────────
 const fadeUp = {
@@ -300,6 +304,11 @@ export function SimuladorIR() {
   const [taxDue, setTaxDue]           = useState(0);          // valor float do IR calculado
   const [lgpdConsent, setLgpdConsent] = useState(false);
 
+  // ── RN01 & RF04 States ──────────────────────────────────────────────────────
+  const [ecaRatio, setEcaRatio]                 = useState(50); // 0 a 100% para o Fundo da Criança (ECA)
+  const [timingMode, setTimingMode]             = useState('daa'); // 'daa' (na declaração) | 'annual' (ano-calendário)
+  const [selectedRegionId, setSelectedRegionId] = useState('sp-capital');
+
   // Resultado calculado — null quando vazio, objeto quando há resultado
   const [calc, setCalc] = useState(null);
 
@@ -328,17 +337,35 @@ export function SimuladorIR() {
       return;
     }
 
-    // Limite máximo de destinação por tipo de contribuinte:
-    // PF: 6% do IR devido (Lei 8.069/90 + Lei 10.741/03)
+    // Limite máximo global de destinação por tipo de contribuinte:
+    // PF: 6% do IR devido (Lei 8.069/90 + Lei 12.213/10)
     // PJ Lucro Real: 2% do IRPJ devido
     const limitPct   = isPF ? 0.06 : 0.02;
-    const splitPct   = limitPct / 2; // 50/50 entre ECA e Fundo do Idoso
     const totalLimit = owedTax * limitPct;
-    const ecaLimit   = owedTax * splitPct;
-    const idosoLimit = owedTax * splitPct;
 
-    setCalc({ owedTax, totalLimit, ecaLimit, idosoLimit, limitPct, splitPct, isEstimate: inputMode === 'estimate' });
-  }, [lgpdConsent, isEligible, inputMode, income, taxDue, isPF]);
+    // Distribuição customizada livre (RN01)
+    const ecaPctDecimal   = ecaRatio / 100;
+    const idosoPctDecimal = (100 - ecaRatio) / 100;
+
+    const ecaLimit   = totalLimit * ecaPctDecimal;
+    const idosoLimit = totalLimit * idosoPctDecimal;
+
+    // Alíquotas efetivas incidentes sobre o imposto devido
+    const effectiveEcaPct   = limitPct * ecaPctDecimal;
+    const effectiveIdosoPct = limitPct * idosoPctDecimal;
+
+    setCalc({
+      owedTax,
+      totalLimit,
+      ecaLimit,
+      idosoLimit,
+      limitPct,
+      ecaRatio,
+      effectiveEcaPct,
+      effectiveIdosoPct,
+      isEstimate: inputMode === 'estimate'
+    });
+  }, [lgpdConsent, isEligible, inputMode, income, taxDue, isPF, ecaRatio]);
 
   // ── Input handlers (máscara BRL sem prefixo R$) ─────────────────────────────
   const handleIncomeChange = (e) => {
@@ -734,29 +761,89 @@ export function SimuladorIR() {
                         </span>
                       </div>
 
-                      {/* Barra visual de distribuição */}
-                      <div className="flex flex-col gap-2">
-                        <div className="flex justify-between text-xs text-white/60">
-                          <span>← Fundo da Criança (ECA)</span>
-                          <span>Fundo do Idoso →</span>
+                      {/* ─── RN01: Slider Interativo de Proporção Livre ECA ↔ Idoso ─── */}
+                      <div className="bg-black/15 backdrop-blur-sm rounded-3xl p-5 md:p-6 border border-white/15 flex flex-col gap-4 mt-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <Sliders className="w-4 h-4 text-emerald-light" />
+                            <span className="text-xs font-bold uppercase tracking-wider text-white">
+                              Distribuição Personalizada entre os Fundos (RN01)
+                            </span>
+                          </div>
+
+                          {/* Botões de atalho rápido / presets */}
+                          <div className="flex items-center flex-wrap gap-1.5 text-[11px] font-bold">
+                            {[
+                              { label: '100% Criança', ratio: 100 },
+                              { label: '70 / 30', ratio: 70 },
+                              { label: '50 / 50 (Padrão)', ratio: 50 },
+                              { label: '30 / 70', ratio: 30 },
+                              { label: '100% Idoso', ratio: 0 },
+                            ].map((preset) => (
+                              <button
+                                key={preset.label}
+                                type="button"
+                                onClick={() => setEcaRatio(preset.ratio)}
+                                className={`px-2.5 py-1 rounded-lg transition-all ${
+                                  ecaRatio === preset.ratio
+                                    ? 'bg-white text-emerald shadow-sm font-extrabold'
+                                    : 'bg-white/10 hover:bg-white/20 text-white/80'
+                                }`}
+                              >
+                                {preset.label}
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                        <div className="h-3 bg-white/20 rounded-full overflow-hidden flex">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: '50%' }}
-                            transition={{ duration: 0.7, ease: 'easeOut' }}
-                            className="h-full bg-blue-300 rounded-l-full"
-                          />
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: '50%' }}
-                            transition={{ duration: 0.7, ease: 'easeOut', delay: 0.12 }}
-                            className="h-full bg-rose-300 rounded-r-full"
-                          />
-                        </div>
-                        <div className="flex justify-between text-xs text-white/50">
-                          <span>{isPF ? '3% do IR' : '1% do IR'} → {formatBRL(calc.ecaLimit)}</span>
-                          <span>{formatBRL(calc.idosoLimit)} ← {isPF ? '3% do IR' : '1% do IR'}</span>
+
+                        {/* Slider Input */}
+                        <div className="flex flex-col gap-2">
+                          <div className="flex justify-between text-xs font-semibold text-white/90">
+                            <span className="flex items-center gap-1.5 text-blue-200">
+                              <Users className="w-3.5 h-3.5" />
+                              Fundo da Criança (ECA): <strong>{calc.ecaRatio}%</strong>
+                            </span>
+                            <span className="flex items-center gap-1.5 text-rose-200">
+                              <Heart className="w-3.5 h-3.5" />
+                              Fundo do Idoso: <strong>{100 - calc.ecaRatio}%</strong>
+                            </span>
+                          </div>
+
+                          <div className="relative flex items-center">
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              step="5"
+                              value={ecaRatio}
+                              onChange={(e) => setEcaRatio(Number(e.target.value))}
+                              aria-label="Proporção entre Fundo da Criança e Fundo do Idoso"
+                              className="w-full h-2.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-emerald focus:outline-none"
+                            />
+                          </div>
+
+                          {/* Barra visual de distribuição animada */}
+                          <div className="h-3 bg-white/20 rounded-full overflow-hidden flex shadow-inner mt-1">
+                            <motion.div
+                              style={{ width: `${calc.ecaRatio}%` }}
+                              transition={{ duration: 0.2, ease: 'easeOut' }}
+                              className="h-full bg-blue-300 rounded-l-full"
+                            />
+                            <motion.div
+                              style={{ width: `${100 - calc.ecaRatio}%` }}
+                              transition={{ duration: 0.2, ease: 'easeOut' }}
+                              className="h-full bg-rose-300 rounded-r-full"
+                            />
+                          </div>
+
+                          <div className="flex justify-between text-[11px] text-white/70 font-medium">
+                            <span>
+                              {formatBRL(calc.ecaLimit)} ({(calc.effectiveEcaPct * 100).toFixed(1)}% do IR)
+                            </span>
+                            <span>
+                              {(calc.effectiveIdosoPct * 100).toFixed(1)}% do IR ({formatBRL(calc.idosoLimit)})
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -772,7 +859,7 @@ export function SimuladorIR() {
                           <div>
                             <p className="text-xs font-bold text-blue-200 uppercase tracking-wider">Fundo da Criança (ECA)</p>
                             <p className="text-[11px] text-white/50">
-                              {isPF ? 'Até 3% do IR devido · Lei 8.069/90' : 'Até 1% do IRPJ · Lei 8.069/90'}
+                              {calc.ecaRatio}% da destinação · {(calc.effectiveEcaPct * 100).toFixed(1)}% do IR · Lei 8.069/90
                             </p>
                           </div>
                         </div>
@@ -780,7 +867,7 @@ export function SimuladorIR() {
                           {formatBRL(calc.ecaLimit)}
                         </span>
                         <p className="text-xs text-white/50 leading-relaxed">
-                          Apoia projetos de educação, proteção e atendimento a crianças e adolescentes em vulnerabilidade.
+                          Apoia projetos de educação, proteção e acolhimento a crianças e adolescentes em vulnerabilidade.
                         </p>
                       </div>
 
@@ -793,7 +880,7 @@ export function SimuladorIR() {
                           <div>
                             <p className="text-xs font-bold text-rose-200 uppercase tracking-wider">Fundo do Idoso</p>
                             <p className="text-[11px] text-white/50">
-                              {isPF ? 'Até 3% do IR devido · Lei 10.741/03' : 'Até 1% do IRPJ · Lei 10.741/03'}
+                              {100 - calc.ecaRatio}% da destinação · {(calc.effectiveIdosoPct * 100).toFixed(1)}% do IR · Lei 12.213/10
                             </p>
                           </div>
                         </div>
@@ -801,7 +888,7 @@ export function SimuladorIR() {
                           {formatBRL(calc.idosoLimit)}
                         </span>
                         <p className="text-xs text-white/50 leading-relaxed">
-                          Financia iniciativas de saúde, convivência e cuidado para idosos em situação de vulnerabilidade.
+                          Financia iniciativas de saúde, convivência e dignidade para idosos em situação de vulnerabilidade.
                         </p>
                       </div>
                     </div>
@@ -830,6 +917,20 @@ export function SimuladorIR() {
                 )}
               </AnimatePresence>
             </motion.div>
+
+            {/* CARD 5: Ficha e Instrução Oficial DARF (RF04) */}
+            {calc && (
+              <div className="md:col-span-3">
+                <DarfInstructionCard
+                  calc={calc}
+                  isPF={isPF}
+                  timingMode={timingMode}
+                  onSelectTimingMode={setTimingMode}
+                  selectedRegionId={selectedRegionId}
+                  onSelectRegionId={setSelectedRegionId}
+                />
+              </div>
+            )}
 
             {/* CARD 6: Info / Disclaimer footer */}
             <motion.div layout {...fadeUp} transition={{ delay: 0.25 }}
