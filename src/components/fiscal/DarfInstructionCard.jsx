@@ -9,12 +9,13 @@ import {
   Users,
   Heart,
   ShieldCheck,
-  ExternalLink,
   ChevronDown,
-  Info,
   MapPin,
   Calendar,
-  AlertCircle
+  AlertTriangle,
+  Building,
+  Landmark,
+  FileCheck
 } from 'lucide-react';
 import { FISCAL_REGIONS, DARF_CODES } from '../../data/fiscalFunds';
 
@@ -32,13 +33,16 @@ export function DarfInstructionCard({
   onSelectRegionId
 }) {
   const [copiedKey, setCopiedKey] = useState(null);
-  const [activeFundTab, setActiveFundTab] = useState('both'); // 'both' | 'eca' | 'idoso'
 
   const currentRegion = FISCAL_REGIONS.find(r => r.id === selectedRegionId) || FISCAL_REGIONS[0];
 
-  const timingKey = timingMode === 'annual' ? 'ANO_CALENDARIO' : 'DAA';
+  // Força 'annual' para PJ caso esteja selecionado 'daa'
+  const effectiveTimingMode = isPF ? timingMode : 'annual';
+
+  const timingKey = effectiveTimingMode === 'annual' ? 'ANO_CALENDARIO' : 'DAA';
   const ecaDarfCode = DARF_CODES.ECA[timingKey]?.code || '3351';
-  const idosoDarfCode = DARF_CODES.IDOSO[timingKey]?.code || (timingMode === 'annual' ? '6023' : '9090');
+  // Para PJ no Fundo do Idoso, a Receita Federal utiliza o código 6023 (ou depósito direto); omitir o código 9090 que é exclusivo do IRPF DAA
+  const idosoDarfCode = isPF ? (effectiveTimingMode === 'annual' ? '6023' : '9090') : '6023';
 
   const ecaInfo = DARF_CODES.ECA[timingKey];
   const idosoInfo = DARF_CODES.IDOSO[timingKey];
@@ -54,29 +58,31 @@ export function DarfInstructionCard({
   };
 
   const generateFullSummaryText = () => {
-    return `=== DOAHUB - INSTRUÇÕES PARA DESTINAÇÃO FISCAL (DARF) ===
+    return `=== DOAHUB - INSTRUÇÕES DE DESTINAÇÃO FISCAL ===
 Exercício: ${new Date().getFullYear()} | Modalidade: ${isPF ? 'Pessoa Física (IRPF)' : 'Pessoa Jurídica (IRPJ Lucro Real)'}
-Momento: ${timingMode === 'annual' ? 'No Decorrer do Ano-Calendário' : 'Diretamente na Declaração (DAA)'}
+Momento: ${effectiveTimingMode === 'annual' ? 'No Decorrer do Ano-Calendário / Apuração' : 'Diretamente na Declaração (DAA)'}
 Região / Fundo: ${currentRegion.name}
 
 1. FUNDO DA CRIANÇA E DO ADOLESCENTE (ECA):
 - Valor a Destinar: ${formatBRL(calc.ecaLimit)}
-- Código de Receita DARF: ${ecaDarfCode}
+- Forma de Repasse / Código: ${isPF ? `DARF Cód. ${ecaDarfCode}` : `DARF Cód. ${ecaDarfCode} ou Depósito Bancário`}
 - CNPJ do Fundo: ${currentRegion.ecaFund.cnpj}
 - Beneficiário: ${currentRegion.ecaFund.name}
+- Banco: ${currentRegion.ecaFund.bank} | Agência: ${currentRegion.ecaFund.agency} | C/C: ${currentRegion.ecaFund.account}
 - Conselho Gestor: ${currentRegion.ecaFund.managingCouncil}
 - Base Legal: Art. 260 da Lei Federal nº 8.069/90 (ECA)
 
 2. FUNDO DO IDOSO:
 - Valor a Destinar: ${formatBRL(calc.idosoLimit)}
-- Código de Receita DARF: ${idosoDarfCode}
+- Forma de Repasse / Código: ${isPF ? (effectiveTimingMode === 'annual' ? `DARF Cód. ${idosoDarfCode}` : `DARF Cód. ${idosoDarfCode} (DAA)`) : `DARF Cód. ${idosoDarfCode} ou Depósito Bancário`}
 - CNPJ do Fundo: ${currentRegion.idosoFund.cnpj}
 - Beneficiário: ${currentRegion.idosoFund.name}
+- Banco: ${currentRegion.idosoFund.bank} | Agência: ${currentRegion.idosoFund.agency} | C/C: ${currentRegion.idosoFund.account}
 - Conselho Gestor: ${currentRegion.idosoFund.managingCouncil}
 - Base Legal: Lei Federal nº 12.213/2010
 
 VALOR TOTAL DA DESTINAÇÃO: ${formatBRL(calc.totalLimit)}
-* Arquitetura Non-Custodial: Pagamento efetuado diretamente aos Fundos Públicos Oficiais.`;
+* Comprovação: ${isPF ? 'Recolhimento via DARF abatido no ajuste do IRPF' : 'Recibo de Doação Incentivada emitido pelo Conselho para escrituração no LALUR / ECF.'}`;
   };
 
   return (
@@ -90,20 +96,22 @@ VALOR TOTAL DA DESTINAÇÃO: ${formatBRL(calc.totalLimit)}
       <div className="bg-gradient-to-r from-graphite-dark via-graphite to-graphite-dark text-white p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-emerald/20 border border-emerald/40 flex items-center justify-center text-emerald flex-shrink-0">
-            <FileText className="w-7 h-7" />
+            {isPF ? <FileText className="w-7 h-7" /> : <Building className="w-7 h-7" />}
           </div>
           <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-2">
               <span className="text-[10px] uppercase font-bold tracking-widest bg-emerald/25 text-emerald-light px-2.5 py-0.5 rounded-full border border-emerald/30">
-                RF04 · Roteamento Fiscal
+                RF04 · Roteamento Fiscal {isPF ? '(PF)' : '(PJ Lucro Real)'}
               </span>
               <span className="text-xs text-white/50 hidden sm:inline">Modelo Non-Custodial</span>
             </div>
             <h3 className="text-xl md:text-2xl font-display font-extrabold tracking-tight">
-              Instrução Oficial de Emissão de DARF
+              {isPF ? 'Instrução Oficial de Emissão de DARF' : 'Instrução de Destinação de IRPJ (Lucro Real)'}
             </h3>
             <p className="text-xs text-white/70">
-              Parametrização exata para preenchimento na Declaração de Imposto de Renda ou guias de recolhimento.
+              {isPF
+                ? 'Parametrização exata para preenchimento na Declaração de Imposto de Renda (IRPF).'
+                : 'Instruções para depósito bancário direto ao Fundo e lançamento contábil no LALUR / ECF.'}
             </p>
           </div>
         </div>
@@ -148,40 +156,52 @@ VALOR TOTAL DA DESTINAÇÃO: ${formatBRL(calc.totalLimit)}
             Momento da Destinação Tributária
           </label>
           <div className="grid grid-cols-2 gap-2 bg-white p-1.5 rounded-2xl border border-graphite/10">
+            {/* Opção DAA — Desabilitada para PJ */}
             <button
               type="button"
-              onClick={() => onSelectTimingMode('daa')}
+              disabled={!isPF}
+              onClick={() => isPF && onSelectTimingMode('daa')}
               className={`py-2 px-3 rounded-xl text-xs font-bold transition-all text-left flex flex-col gap-0.5 ${
-                timingMode === 'daa'
+                !isPF
+                  ? 'bg-graphite/5 text-graphite-light/50 cursor-not-allowed border border-graphite/5'
+                  : timingMode === 'daa'
                   ? 'bg-emerald text-white shadow-sm'
                   : 'text-graphite hover:bg-ice'
               }`}
             >
               <span>Na Declaração (DAA)</span>
-              <span className={`text-[10px] font-normal ${timingMode === 'daa' ? 'text-white/80' : 'text-graphite-light'}`}>
-                Códigos 3351 & 9090
+              <span className={`text-[10px] font-normal ${!isPF ? 'text-graphite-light/40' : timingMode === 'daa' ? 'text-white/80' : 'text-graphite-light'}`}>
+                {isPF ? 'Exclusivo PGD IRPF (3351 / 9090)' : 'Não aplicável a PJ'}
               </span>
             </button>
 
+            {/* Opção Ano-Calendário */}
             <button
               type="button"
               onClick={() => onSelectTimingMode('annual')}
               className={`py-2 px-3 rounded-xl text-xs font-bold transition-all text-left flex flex-col gap-0.5 ${
-                timingMode === 'annual'
+                effectiveTimingMode === 'annual'
                   ? 'bg-emerald text-white shadow-sm'
                   : 'text-graphite hover:bg-ice'
               }`}
             >
-              <span>No Ano-Calendário</span>
-              <span className={`text-[10px] font-normal ${timingMode === 'annual' ? 'text-white/80' : 'text-graphite-light'}`}>
-                Códigos 3351 & 6023
+              <span>No Ano-Calendário / Apuração</span>
+              <span className={`text-[10px] font-normal ${effectiveTimingMode === 'annual' ? 'text-white/80' : 'text-graphite-light'}`}>
+                {isPF ? 'Códigos 3351 & 6023' : 'Recolhimento Corporativo'}
               </span>
             </button>
           </div>
+
           <span className="text-[11px] text-graphite-light">
-            {timingMode === 'daa'
-              ? 'Destinação direta durante a entrega do IRPF (março/abril) com emissão de DARF pelo próprio programa da Receita.'
-              : 'Destinação antecipada ao longo do ano corrente com recolhimento via DARF ou guia bancária do fundo.'}
+            {isPF ? (
+              timingMode === 'daa'
+                ? 'Destinação direta durante a entrega do IRPF (março/abril) com emissão de DARF pelo próprio programa da Receita.'
+                : 'Destinação antecipada ao longo do ano corrente com recolhimento via DARF ou guia bancária do fundo.'
+            ) : (
+              <strong className="text-emerald font-semibold">
+                Pessoas Jurídicas (Lucro Real) efetuam a destinação exclusivamente no ano-calendário/período de apuração.
+              </strong>
+            )}
           </span>
         </div>
 
@@ -232,11 +252,13 @@ VALOR TOTAL DA DESTINAÇÃO: ${formatBRL(calc.totalLimit)}
                 </div>
               </div>
 
-              {/* Badge Código da Receita */}
+              {/* Badge Código da Receita ou Forma de Repasse */}
               <div className="flex flex-col items-end">
-                <span className="text-[10px] text-graphite-light uppercase font-bold">Cód. Receita</span>
-                <span className="text-lg font-black font-display text-blue-700 bg-white border border-blue-200 px-2.5 py-0.5 rounded-lg shadow-sm">
-                  {ecaDarfCode}
+                <span className="text-[10px] text-graphite-light uppercase font-bold">
+                  {isPF ? 'Cód. Receita' : 'Forma de Repasse'}
+                </span>
+                <span className="text-sm md:text-base font-black font-display text-blue-700 bg-white border border-blue-200 px-2.5 py-0.5 rounded-lg shadow-sm">
+                  {isPF ? ecaDarfCode : `DARF ${ecaDarfCode} / Depósito`}
                 </span>
               </div>
             </div>
@@ -244,7 +266,7 @@ VALOR TOTAL DA DESTINAÇÃO: ${formatBRL(calc.totalLimit)}
             {/* Dados Parametrizados */}
             <div className="bg-white rounded-2xl p-4 border border-blue-100/80 flex flex-col gap-2.5 text-xs">
               <div className="flex justify-between items-center pb-2 border-b border-graphite/5">
-                <span className="text-graphite-light">Valor da Guia:</span>
+                <span className="text-graphite-light">Valor a Destinar:</span>
                 <span className="font-display font-black text-blue-900 text-lg">
                   {formatBRL(calc.ecaLimit)}
                 </span>
@@ -272,32 +294,45 @@ VALOR TOTAL DA DESTINAÇÃO: ${formatBRL(calc.totalLimit)}
                 </span>
               </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-graphite-light">Esfera:</span>
-                <span className="font-semibold text-graphite-dark">{currentRegion.ecaFund.esfera} ({currentRegion.city})</span>
+              {/* Dados Bancários Oficiais para PJ/Depósito */}
+              <div className="flex justify-between items-center bg-blue-50/60 p-2 rounded-xl border border-blue-100">
+                <span className="text-graphite-light flex items-center gap-1">
+                  <Landmark className="w-3.5 h-3.5 text-blue-600" />
+                  Conta Oficial:
+                </span>
+                <span className="font-mono font-bold text-blue-950">
+                  {currentRegion.ecaFund.bank} · Ag: {currentRegion.ecaFund.agency} · C/C: {currentRegion.ecaFund.account}
+                </span>
               </div>
 
               <div className="flex justify-between items-center text-[11px] pt-1 text-graphite-light/80">
                 <span>Base Normativa:</span>
                 <span className="italic">{ecaInfo?.law}</span>
               </div>
+
+              {!isPF && (
+                <div className="bg-emerald/5 p-2 rounded-xl border border-emerald/10 text-[11px] text-emerald-dark font-medium flex items-center gap-1.5 mt-1">
+                  <FileCheck className="w-3.5 h-3.5 text-emerald flex-shrink-0" />
+                  <span>Comprovação via Recibo de Doação Incentivada (CMDCA) para lançamento no LALUR.</span>
+                </div>
+              )}
             </div>
 
             {/* Ação rápida da guia */}
             <div className="flex items-center justify-between gap-3 pt-2">
               <span className="text-[11px] text-blue-800 font-medium">
-                {ecaInfo?.programSection}
+                {isPF ? ecaInfo?.programSection : 'Depósito Direto ou Guia de Arrecadação'}
               </span>
               <button
                 type="button"
                 onClick={() => copyToClipboard(
-                  `FUNDO ECA: CNPJ ${currentRegion.ecaFund.cnpj} | Cód. Receita: ${ecaDarfCode} | Valor: ${formatBRL(calc.ecaLimit)}`,
+                  `FUNDO ECA: CNPJ ${currentRegion.ecaFund.cnpj} | Banco: ${currentRegion.ecaFund.bank} Ag: ${currentRegion.ecaFund.agency} C/C: ${currentRegion.ecaFund.account} | Valor: ${formatBRL(calc.ecaLimit)}`,
                   'guide-eca'
                 )}
                 className="inline-flex items-center gap-1 text-xs font-bold text-blue-700 hover:text-blue-900 hover:underline"
               >
                 {copiedKey === 'guide-eca' ? <Check className="w-3.5 h-3.5 text-emerald" /> : <Copy className="w-3.5 h-3.5" />}
-                Copiar Linha Digitável
+                {isPF ? 'Copiar Linha Digitável' : 'Copiar Dados Bancários'}
               </button>
             </div>
           </div>
@@ -319,11 +354,13 @@ VALOR TOTAL DA DESTINAÇÃO: ${formatBRL(calc.totalLimit)}
                 </div>
               </div>
 
-              {/* Badge Código da Receita */}
+              {/* Badge Código da Receita / Forma de Repasse */}
               <div className="flex flex-col items-end">
-                <span className="text-[10px] text-graphite-light uppercase font-bold">Cód. Receita</span>
-                <span className="text-lg font-black font-display text-rose-700 bg-white border border-rose-200 px-2.5 py-0.5 rounded-lg shadow-sm">
-                  {idosoDarfCode}
+                <span className="text-[10px] text-graphite-light uppercase font-bold">
+                  {isPF ? 'Cód. Receita' : 'Forma de Repasse'}
+                </span>
+                <span className="text-sm md:text-base font-black font-display text-rose-700 bg-white border border-rose-200 px-2.5 py-0.5 rounded-lg shadow-sm">
+                  {isPF ? idosoDarfCode : `DARF ${idosoDarfCode} / Depósito`}
                 </span>
               </div>
             </div>
@@ -331,7 +368,7 @@ VALOR TOTAL DA DESTINAÇÃO: ${formatBRL(calc.totalLimit)}
             {/* Dados Parametrizados */}
             <div className="bg-white rounded-2xl p-4 border border-rose-100/80 flex flex-col gap-2.5 text-xs">
               <div className="flex justify-between items-center pb-2 border-b border-graphite/5">
-                <span className="text-graphite-light">Valor da Guia:</span>
+                <span className="text-graphite-light">Valor a Destinar:</span>
                 <span className="font-display font-black text-rose-900 text-lg">
                   {formatBRL(calc.idosoLimit)}
                 </span>
@@ -359,56 +396,87 @@ VALOR TOTAL DA DESTINAÇÃO: ${formatBRL(calc.totalLimit)}
                 </span>
               </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-graphite-light">Esfera:</span>
-                <span className="font-semibold text-graphite-dark">{currentRegion.idosoFund.esfera} ({currentRegion.city})</span>
+              {/* Dados Bancários Oficiais para PJ/Depósito */}
+              <div className="flex justify-between items-center bg-rose-50/60 p-2 rounded-xl border border-rose-100">
+                <span className="text-graphite-light flex items-center gap-1">
+                  <Landmark className="w-3.5 h-3.5 text-rose-600" />
+                  Conta Oficial:
+                </span>
+                <span className="font-mono font-bold text-rose-950">
+                  {currentRegion.idosoFund.bank} · Ag: {currentRegion.idosoFund.agency} · C/C: {currentRegion.idosoFund.account}
+                </span>
               </div>
 
               <div className="flex justify-between items-center text-[11px] pt-1 text-graphite-light/80">
                 <span>Base Normativa:</span>
                 <span className="italic">{idosoInfo?.law}</span>
               </div>
+
+              {!isPF && (
+                <div className="bg-emerald/5 p-2 rounded-xl border border-emerald/10 text-[11px] text-emerald-dark font-medium flex items-center gap-1.5 mt-1">
+                  <FileCheck className="w-3.5 h-3.5 text-emerald flex-shrink-0" />
+                  <span>Comprovação via Recibo de Doação Incentivada (CMI) para lançamento no LALUR.</span>
+                </div>
+              )}
             </div>
 
             {/* Ação rápida da guia */}
             <div className="flex items-center justify-between gap-3 pt-2">
               <span className="text-[11px] text-rose-800 font-medium">
-                {idosoInfo?.programSection}
+                {isPF ? idosoInfo?.programSection : 'Depósito Direto ou Guia de Arrecadação'}
               </span>
               <button
                 type="button"
                 onClick={() => copyToClipboard(
-                  `FUNDO IDOSO: CNPJ ${currentRegion.idosoFund.cnpj} | Cód. Receita: ${idosoDarfCode} | Valor: ${formatBRL(calc.idosoLimit)}`,
+                  `FUNDO IDOSO: CNPJ ${currentRegion.idosoFund.cnpj} | Banco: ${currentRegion.idosoFund.bank} Ag: ${currentRegion.idosoFund.agency} C/C: ${currentRegion.idosoFund.account} | Valor: ${formatBRL(calc.idosoLimit)}`,
                   'guide-idoso'
                 )}
                 className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 hover:text-rose-900 hover:underline"
               >
                 {copiedKey === 'guide-idoso' ? <Check className="w-3.5 h-3.5 text-emerald" /> : <Copy className="w-3.5 h-3.5" />}
-                Copiar Linha Digitável
+                {isPF ? 'Copiar Linha Digitável' : 'Copiar Dados Bancários'}
               </button>
             </div>
           </div>
 
         </div>
 
-        {/* ─── Passo a Passo Oficial para a Declaração ─────────────────── */}
+        {/* ─── Passo a Passo Dinâmico (PF vs PJ) ─────────────────── */}
         <div className="bg-graphite-dark/5 rounded-2xl p-5 border border-graphite/10 flex flex-col gap-3">
           <div className="flex items-center gap-2 text-graphite-dark font-bold text-sm">
             <ShieldCheck className="w-5 h-5 text-emerald" />
-            Passo a Passo de Preenchimento no Programa da Receita Federal (PGD IRPF)
+            {isPF
+              ? 'Passo a Passo de Preenchimento no Programa da Receita Federal (PGD IRPF)'
+              : 'Passo a Passo Corporativo para Destinação de IRPJ (Lucro Real)'}
           </div>
 
-          <ol className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-graphite leading-relaxed list-decimal list-inside">
-            <li className="bg-white p-3 rounded-xl border border-graphite/5">
-              <strong>1. Localize a Ficha:</strong> No menu lateral esquerdo do IRPF, clique em <em>"Doações Diretamente na Declaração"</em> e escolha a aba (Criança/Adolescente ou Idoso).
-            </li>
-            <li className="bg-white p-3 rounded-xl border border-graphite/5">
-              <strong>2. Selecione o Fundo:</strong> Clique em <em>"Novo"</em>, selecione o Tipo de Fundo (<strong>{currentRegion.ecaFund.esfera}</strong>), UF (<strong>{currentRegion.state}</strong>) e confirme o CNPJ <strong>{currentRegion.ecaFund.cnpj}</strong>.
-            </li>
-            <li className="bg-white p-3 rounded-xl border border-graphite/5">
-              <strong>3. Emita e Pague o DARF:</strong> No menu <em>"Imprimir" &gt; "DARF - Doações Diretamente na Declaração"</em>, pague a guia até o último dia útil de abril. O valor abaterá do seu imposto a pagar ou aumentará sua restituição!
-            </li>
-          </ol>
+          {isPF ? (
+            /* Fluxo Pessoa Física */
+            <ol className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-graphite leading-relaxed list-decimal list-inside">
+              <li className="bg-white p-3 rounded-xl border border-graphite/5">
+                <strong>1. Localize a Ficha:</strong> No menu lateral esquerdo do IRPF, clique em <em>"Doações Diretamente na Declaração"</em> e escolha a aba (Criança/Adolescente ou Idoso).
+              </li>
+              <li className="bg-white p-3 rounded-xl border border-graphite/5">
+                <strong>2. Selecione o Fundo:</strong> Clique em <em>"Novo"</em>, selecione o Tipo de Fundo (<strong>{currentRegion.ecaFund.esfera}</strong>), UF (<strong>{currentRegion.state}</strong>) e confirme o CNPJ <strong>{currentRegion.ecaFund.cnpj}</strong>.
+              </li>
+              <li className="bg-white p-3 rounded-xl border border-graphite/5">
+                <strong>3. Emita e Pague o DARF:</strong> No menu <em>"Imprimir" &gt; "DARF - Doações Diretamente na Declaração"</em>, pague a guia até o último dia útil de abril. O valor abaterá do seu imposto a pagar ou aumentará sua restituição!
+              </li>
+            </ol>
+          ) : (
+            /* Fluxo Pessoa Jurídica */
+            <ol className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-graphite leading-relaxed list-decimal list-inside">
+              <li className="bg-white p-3 rounded-xl border border-graphite/5">
+                <strong>1. Efetue a Transferência:</strong> Realize a transferência do valor (respeitando o teto de 1% IRPJ por fundo) diretamente para a conta bancária oficial do Fundo Municipal (FUMCAD/FMID) até o final do período de apuração.
+              </li>
+              <li className="bg-white p-3 rounded-xl border border-graphite/5">
+                <strong>2. Obtenha o Recibo Oficial:</strong> Envie o comprovante de depósito ao Conselho de Direitos (CMDCA/CMI) solicitando a emissão do <em>Recibo de Doação Incentivada</em> nominal à sua empresa.
+              </li>
+              <li className="bg-white p-3 rounded-xl border border-graphite/5">
+                <strong>3. Lançamento no LALUR / ECF:</strong> Entregue o recibo oficial à equipe contábil para registro de dedução do IRPJ no LALUR e transmissão na ECF (Escrituração Contábil Fiscal).
+              </li>
+            </ol>
+          )}
         </div>
 
       </div>

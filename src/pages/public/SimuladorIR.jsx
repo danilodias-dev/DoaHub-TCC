@@ -319,6 +319,13 @@ export function SimuladorIR() {
                      (isPJ && pjRegime && pjRegime !== 'lucro_real');
   const isEligible = (isPF && pfModel === 'completo') || (isPJ && pjRegime === 'lucro_real');
 
+  // Trava para PJ: Pessoas Jurídicas operam exclusivamente no ano-calendário/apuração
+  useEffect(() => {
+    if (!isPF && entity === 'pj' && timingMode === 'daa') {
+      setTimingMode('annual');
+    }
+  }, [isPF, entity, timingMode]);
+
   // ── Motor de Cálculo em Tempo Real (useEffect) ──────────────────────────────
   useEffect(() => {
     // Pré-condições obrigatórias: LGPD aceito e regime elegível
