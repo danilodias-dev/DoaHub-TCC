@@ -21,12 +21,12 @@ export function SimulatorCTA() {
     >
       <div className="max-w-7xl mx-auto">
         <div
-          className="relative rounded-[2rem] overflow-hidden bg-[#1a4fe0] shadow-2xl shadow-blue-900/30"
+          className="relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-[#851635] via-[#78122e] to-[#600a20] shadow-2xl shadow-rose-950/30"
         >
           {/* Background decorations */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
             <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/5 rounded-full blur-3xl" />
-            <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-blue-400/10 rounded-full blur-2xl" />
+            <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-rose-400/10 rounded-full blur-2xl" />
             {/* Grid dots */}
             <div
               className="absolute inset-0 opacity-10"
@@ -80,7 +80,7 @@ export function SimulatorCTA() {
                   id="simulator-cta-btn"
                   type="button"
                   onClick={() => navigate('/simulador-ir')}
-                  className="group inline-flex items-center gap-3 bg-white text-blue-700 font-black text-base px-8 py-4 rounded-2xl shadow-xl hover:bg-yellow-300 hover:text-blue-900 transition-all duration-300 active:scale-95"
+                  className="group inline-flex items-center gap-3 bg-white text-[#78122e] font-black text-base px-8 py-4 rounded-2xl shadow-xl hover:bg-yellow-300 hover:text-[#52091c] transition-all duration-300 active:scale-95"
                 >
                   <Calculator className="w-5 h-5" />
                   Simular meu IR agora
