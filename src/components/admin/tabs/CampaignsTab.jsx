@@ -12,9 +12,9 @@ import {
   Tag,
   AlertTriangle,
 } from 'lucide-react';
-import { PremiumButton } from '../ui/PremiumButton';
-import { useCampaigns } from '../../context/CampaignContext';
-import { motionTokens } from '../../utils/motion';
+import { PremiumButton } from '../../ui/PremiumButton';
+import { useCampaigns } from '../../../contexts/CampaignContext';
+import { motionTokens } from '../../../utils/motion';
 
 /**
  * ============================================

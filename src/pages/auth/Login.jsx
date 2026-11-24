@@ -5,18 +5,37 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { motionTokens } from '../../utils/motion';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 export function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Simula autenticação — seta o estado de auth e redireciona para o painel do doador
-    login({ name: 'João Silva', email: 'joao@email.com' });
-    navigate('/doador');
+    setErrorMsg('');
+    setLoading(true);
+    try {
+      const result = await login({ email, password });
+      const tipo = result?.profile?.tipo;
+      if (tipo === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (tipo === 'ong') {
+        navigate('/ong/dashboard');
+      } else {
+        navigate('/doador');
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMsg(err.message || 'Falha ao autenticar. Verifique e-mail e senha.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const pageVariants = {
@@ -108,12 +127,19 @@ export function Login() {
           </div>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-5">
+            {errorMsg && (
+              <div className="p-3 text-xs bg-red-50 text-red-700 rounded-xl border border-red-200">
+                {errorMsg}
+              </div>
+            )}
             <div className="flex flex-col gap-2">
               <label className="text-xs font-bold text-graphite-light uppercase tracking-wider ml-1">E-mail</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-graphite-light" />
                 <input 
                   type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu@email.com" 
                   required
                   className="w-full bg-white border border-graphite/5 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-emerald/50 focus:ring-4 focus:ring-emerald/5 transition-all font-medium"
@@ -130,6 +156,8 @@ export function Login() {
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-graphite-light" />
                 <input 
                   type={showPassword ? 'text' : 'password'} 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••" 
                   required
                   className="w-full bg-white border border-graphite/5 rounded-2xl py-4 pl-12 pr-12 outline-none focus:border-emerald/50 focus:ring-4 focus:ring-emerald/5 transition-all font-medium"
@@ -149,8 +177,8 @@ export function Login() {
               <span className="text-sm font-medium text-graphite-light group-hover:text-graphite transition-colors">Lembrar de mim por 30 dias</span>
             </label>
 
-            <PremiumButton type="submit" size="lg" className="mt-4 shadow-xl shadow-emerald/30">
-              Entrar na Plataforma
+            <PremiumButton type="submit" size="lg" disabled={loading} className="mt-4 shadow-xl shadow-emerald/30">
+              {loading ? 'Entrando...' : 'Entrar na Plataforma'}
             </PremiumButton>
           </form>
 

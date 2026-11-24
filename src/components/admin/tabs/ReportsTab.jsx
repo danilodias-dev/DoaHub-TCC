@@ -19,7 +19,7 @@ import {
   Target,
   AlertTriangle,
 } from 'lucide-react';
-import { useCampaigns } from '../../context/CampaignContext';
+import { useCampaigns } from '../../../contexts/CampaignContext';
 
 /**
  * ============================================

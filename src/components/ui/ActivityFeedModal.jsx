@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Activity, Filter, Download } from 'lucide-react';
 import { useState } from 'react';
-import { useCampaigns } from '../../context/CampaignContext';
+import { useCampaigns } from '../../contexts/CampaignContext';
 import { downloadDonationReceipt } from '../../utils/receiptGenerator';
 
 /**

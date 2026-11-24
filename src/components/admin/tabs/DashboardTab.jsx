@@ -13,10 +13,10 @@ import {
   Download,
   X,
 } from 'lucide-react';
-import { useCampaigns } from '../../context/CampaignContext';
-import { ActivityFeedModal } from '../ui/ActivityFeedModal';
-import { downloadDonationReceipt } from '../../utils/receiptGenerator';
-import { motionTokens } from '../../utils/motion';
+import { useCampaigns } from '../../../contexts/CampaignContext';
+import { ActivityFeedModal } from '../../ui/ActivityFeedModal';
+import { downloadDonationReceipt } from '../../../utils/receiptGenerator';
+import { motionTokens } from '../../../utils/motion';
 
 /**
  * ============================================

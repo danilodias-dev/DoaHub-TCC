@@ -21,7 +21,7 @@ import {
   RotateCcw,
   Percent,
 } from 'lucide-react';
-import { DarfInstructionCard } from '../../components/fiscal/DarfInstructionCard';
+import { DarfInstructionCard } from '../../components/simulador/DarfInstructionCard';
 
 // ─── Animation Tokens ────────────────────────────────────────────────────────
 const fadeUp = {

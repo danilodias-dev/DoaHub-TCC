@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Mail, Globe, MapPin, CheckCircle2, ShieldCheck, Heart, Megaphone, FileText, Share2 } from 'lucide-react';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { CampaignCard } from '../../components/ui/CampaignCard';
-import { useCampaigns } from '../../context/CampaignContext';
+import { useCampaigns } from '../../contexts/CampaignContext';
 import { motionTokens } from '../../utils/motion';
 
 export function PerfilInstituicao() {

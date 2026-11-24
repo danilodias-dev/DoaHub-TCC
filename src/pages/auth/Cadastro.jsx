@@ -4,18 +4,20 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { ProfileSwitcher } from '../../components/auth/ProfileSwitcher';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { motionTokens } from '../../utils/motion';
 
 export function Cadastro() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { signUp } = useAuth();
 
   // Preserva dados vindos da transição com a rota de ONG
   const [name, setName] = useState(location.state?.name || location.state?.nome || '');
   const [email, setEmail] = useState(location.state?.email || '');
   const [password, setPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (location.state?.name || location.state?.nome) {
@@ -38,23 +40,24 @@ export function Cadastro() {
     }
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    
-    // Payload estruturado explicitamente com role do usuário
-    const payload = {
-      name: name.trim(),
-      email: email.trim(),
-      password,
-      role: 'DONOR',
-      type: 'INDIVIDUAL',
-    };
-
-    // Atualiza o estado de autenticação com o payload do doador
-    login(payload);
-
-    // Redireciona para o painel do doador
-    navigate('/doador');
+    setErrorMsg('');
+    setLoading(true);
+    try {
+      await signUp({
+        nome: name.trim(),
+        email: email.trim(),
+        password,
+        tipo: 'doador',
+      });
+      navigate('/doador');
+    } catch (err) {
+      console.error(err);
+      setErrorMsg(err.message || 'Falha ao criar conta. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const pageVariants = {
@@ -161,6 +164,11 @@ export function Cadastro() {
             aria-labelledby="tab-donor"
             className="flex flex-col gap-5"
           >
+            {errorMsg && (
+              <div className="p-3 text-xs bg-red-50 text-red-700 rounded-xl border border-red-200">
+                {errorMsg}
+              </div>
+            )}
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-bold text-graphite-light uppercase tracking-widest ml-1">Nome Completo</label>
               <div className="relative">

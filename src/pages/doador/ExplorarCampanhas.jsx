@@ -3,11 +3,13 @@ import { motion } from 'framer-motion';
 import { Search, Grid, List } from 'lucide-react';
 import { useState } from 'react';
 import { CampaignCard } from '../../components/ui/CampaignCard';
-import { MOCK_CAMPAIGNS } from '../../data/mockData';
 import { motionTokens } from '../../utils/motion';
+import { useCampaigns } from '../../contexts/CampaignContext';
 
 export function ExplorarCampanhas() {
+  const { campanhas, loading } = useCampaigns();
   const [filter, setFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const [view, setView] = useState('grid');
 
   const pageVariants = {
@@ -23,6 +25,22 @@ export function ExplorarCampanhas() {
     { id: 'educacao', label: 'Educação' },
     { id: 'ambiente', label: 'Meio Ambiente' },
   ];
+
+  const campanhasFiltradas = (campanhas || []).filter(c => {
+    const matchSearch = searchTerm === '' || 
+      (c.title || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (c.location || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (c.ongName || '').toLowerCase().includes(searchTerm.toLowerCase());
+
+    if (!matchSearch) return false;
+    if (filter === 'all') return true;
+    const cat = (c.category || '').toLowerCase();
+    if (filter === 'fome') return cat.includes('aliment') || cat.includes('fome');
+    if (filter === 'saude') return cat.includes('saúde') || cat.includes('saude');
+    if (filter === 'educacao') return cat.includes('educa');
+    if (filter === 'ambiente') return cat.includes('ambient');
+    return true;
+  });
 
   return (
     <motion.div 
@@ -64,6 +82,8 @@ export function ExplorarCampanhas() {
                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-graphite-light" />
                <input 
                  type="text" 
+                 value={searchTerm}
+                 onChange={(e) => setSearchTerm(e.target.value)}
                  placeholder="Buscar por nome ou cidade..." 
                  className="w-full md:w-64 bg-ice rounded-2xl py-3 pl-11 pr-4 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald/20 transition-all"
                />
@@ -86,19 +106,25 @@ export function ExplorarCampanhas() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {MOCK_CAMPAIGNS.map((campaign, idx) => (
-            <motion.div
-              key={campaign.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-            >
-              <CampaignCard {...campaign} />
-            </motion.div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="py-20 text-center text-graphite-light">
+            <p className="font-medium animate-pulse">Carregando campanhas oficiais do Supabase...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {campanhasFiltradas.map((campaign, idx) => (
+              <motion.div
+                key={campaign.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <CampaignCard {...campaign} />
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {/* Empty State / Pagination Simulation */}
         <div className="flex flex-col items-center gap-6 py-12 border-t border-graphite/5 mt-8">

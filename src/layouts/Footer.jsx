@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Logo } from '../ui/Logo';
-import { HIDDEN_NAV_ROUTES } from '../../data/constants';
+import { Logo } from '../components/ui/Logo';
+import { HIDDEN_NAV_ROUTES } from '../data/constants';
 
 const FOOTER_SECTIONS = [
   {

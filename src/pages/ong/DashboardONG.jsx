@@ -17,11 +17,11 @@ import { Logo } from '../../components/ui/Logo';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 import { NewCampaignModal } from '../../components/ui/NewCampaignModal';
 import { Toast } from '../../components/ui/Toast';
-import { DashboardTab } from '../../components/tabs/DashboardTab';
-import { CampaignsTab } from '../../components/tabs/CampaignsTab';
-import { ReportsTab } from '../../components/tabs/ReportsTab';
-import { SettingsTab } from '../../components/tabs/SettingsTab';
-import { useCampaigns, useNotification } from '../../context/CampaignContext';
+import { DashboardTab } from '../../components/admin/tabs/DashboardTab';
+import { CampaignsTab } from '../../components/admin/tabs/CampaignsTab';
+import { ReportsTab } from '../../components/admin/tabs/ReportsTab';
+import { SettingsTab } from '../../components/admin/tabs/SettingsTab';
+import { useCampaigns, useNotification } from '../../contexts/CampaignContext';
 import { useMemo } from 'react';
 import { motionTokens } from '../../utils/motion';
 

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, FileText, AlertCircle, FileCheck2, TrendingUp, CheckCircle2, X } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { useDonor } from '../../context/DonorContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { useDonor } from '../../contexts/DonorContext';
 import { motionTokens } from '../../utils/motion';
 import { PremiumButton } from '../../components/ui/PremiumButton';
 

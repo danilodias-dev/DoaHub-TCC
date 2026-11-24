@@ -15,9 +15,12 @@ import {
   AlertTriangle,
   Building,
   Landmark,
-  FileCheck
+  FileCheck,
+  BookmarkPlus
 } from 'lucide-react';
 import { FISCAL_REGIONS, DARF_CODES } from '../../data/fiscalFunds';
+import { useDonor } from '../../contexts/DonorContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 function formatBRL(value) {
   if (!value || isNaN(value)) return 'R$ 0,00';
@@ -33,6 +36,34 @@ export function DarfInstructionCard({
   onSelectRegionId
 }) {
   const [copiedKey, setCopiedKey] = useState(null);
+  const [salvando, setSalvando] = useState(false);
+  const [salvoMsg, setSalvoMsg] = useState(null);
+  const { registrarDestinacao } = useDonor();
+  const { isAuthenticated } = useAuth();
+
+  const handleSalvarDestinacao = async (fundoTipo, valor, darfCodigo, fundoNome) => {
+    if (!isAuthenticated) {
+      setSalvoMsg('Faça login para salvar esta guia no seu histórico!');
+      setTimeout(() => setSalvoMsg(null), 3500);
+      return;
+    }
+    setSalvando(true);
+    try {
+      await registrarDestinacao({
+        valor,
+        fundo_governamental: `${fundoTipo} - ${fundoNome}`,
+        codigo_darf: darfCodigo,
+        status: 'Pendente',
+      });
+      setSalvoMsg(`Guia ${fundoTipo} registrada no seu painel com sucesso!`);
+    } catch (err) {
+      console.error(err);
+      setSalvoMsg('Erro ao registrar no histórico.');
+    } finally {
+      setSalvando(false);
+      setTimeout(() => setSalvoMsg(null), 4000);
+    }
+  };
 
   const currentRegion = FISCAL_REGIONS.find(r => r.id === selectedRegionId) || FISCAL_REGIONS[0];
 
@@ -148,6 +179,12 @@ VALOR TOTAL DA DESTINAÇÃO: ${formatBRL(calc.totalLimit)}
       </div>
 
       {/* ─── Controles de Contexto Fiscal ─────────────────────────────── */}
+      {salvoMsg && (
+        <div className="mx-6 mt-4 p-3 bg-emerald/10 border border-emerald/20 text-emerald-dark text-xs font-bold rounded-2xl flex items-center gap-2">
+          <Check className="w-4 h-4 text-emerald flex-shrink-0" />
+          <span>{salvoMsg}</span>
+        </div>
+      )}
       <div className="p-6 md:p-8 bg-ice/40 border-b border-graphite/5 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Seletor de Momento de Destinação */}
         <div className="flex flex-col gap-2">
@@ -319,21 +356,32 @@ VALOR TOTAL DA DESTINAÇÃO: ${formatBRL(calc.totalLimit)}
             </div>
 
             {/* Ação rápida da guia */}
-            <div className="flex items-center justify-between gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-blue-200/50">
               <span className="text-[11px] text-blue-800 font-medium">
                 {isPF ? ecaInfo?.programSection : 'Depósito Direto ou Guia de Arrecadação'}
               </span>
-              <button
-                type="button"
-                onClick={() => copyToClipboard(
-                  `FUNDO ECA: CNPJ ${currentRegion.ecaFund.cnpj} | Banco: ${currentRegion.ecaFund.bank} Ag: ${currentRegion.ecaFund.agency} C/C: ${currentRegion.ecaFund.account} | Valor: ${formatBRL(calc.ecaLimit)}`,
-                  'guide-eca'
-                )}
-                className="inline-flex items-center gap-1 text-xs font-bold text-blue-700 hover:text-blue-900 hover:underline"
-              >
-                {copiedKey === 'guide-eca' ? <Check className="w-3.5 h-3.5 text-emerald" /> : <Copy className="w-3.5 h-3.5" />}
-                {isPF ? 'Copiar Linha Digitável' : 'Copiar Dados Bancários'}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSalvarDestinacao('ECA', calc.ecaLimit, ecaDarfCode, currentRegion.ecaFund.name)}
+                  disabled={salvando}
+                  className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 transition-colors"
+                >
+                  <BookmarkPlus className="w-3.5 h-3.5" />
+                  Salvar Guia
+                </button>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(
+                    `FUNDO ECA: CNPJ ${currentRegion.ecaFund.cnpj} | Banco: ${currentRegion.ecaFund.bank} Ag: ${currentRegion.ecaFund.agency} C/C: ${currentRegion.ecaFund.account} | Valor: ${formatBRL(calc.ecaLimit)}`,
+                    'guide-eca'
+                  )}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-blue-700 hover:text-blue-900 hover:underline"
+                >
+                  {copiedKey === 'guide-eca' ? <Check className="w-3.5 h-3.5 text-emerald" /> : <Copy className="w-3.5 h-3.5" />}
+                  {isPF ? 'Copiar Linha Digitável' : 'Copiar Dados Bancários'}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -421,21 +469,32 @@ VALOR TOTAL DA DESTINAÇÃO: ${formatBRL(calc.totalLimit)}
             </div>
 
             {/* Ação rápida da guia */}
-            <div className="flex items-center justify-between gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-rose-200/50">
               <span className="text-[11px] text-rose-800 font-medium">
                 {isPF ? idosoInfo?.programSection : 'Depósito Direto ou Guia de Arrecadação'}
               </span>
-              <button
-                type="button"
-                onClick={() => copyToClipboard(
-                  `FUNDO IDOSO: CNPJ ${currentRegion.idosoFund.cnpj} | Banco: ${currentRegion.idosoFund.bank} Ag: ${currentRegion.idosoFund.agency} C/C: ${currentRegion.idosoFund.account} | Valor: ${formatBRL(calc.idosoLimit)}`,
-                  'guide-idoso'
-                )}
-                className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 hover:text-rose-900 hover:underline"
-              >
-                {copiedKey === 'guide-idoso' ? <Check className="w-3.5 h-3.5 text-emerald" /> : <Copy className="w-3.5 h-3.5" />}
-                {isPF ? 'Copiar Linha Digitável' : 'Copiar Dados Bancários'}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSalvarDestinacao('IDOSO', calc.idosoLimit, idosoDarfCode, currentRegion.idosoFund.name)}
+                  disabled={salvando}
+                  className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 transition-colors"
+                >
+                  <BookmarkPlus className="w-3.5 h-3.5" />
+                  Salvar Guia
+                </button>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(
+                    `FUNDO IDOSO: CNPJ ${currentRegion.idosoFund.cnpj} | Banco: ${currentRegion.idosoFund.bank} Ag: ${currentRegion.idosoFund.agency} C/C: ${currentRegion.idosoFund.account} | Valor: ${formatBRL(calc.idosoLimit)}`,
+                    'guide-idoso'
+                  )}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 hover:text-rose-900 hover:underline"
+                >
+                  {copiedKey === 'guide-idoso' ? <Check className="w-3.5 h-3.5 text-emerald" /> : <Copy className="w-3.5 h-3.5" />}
+                  {isPF ? 'Copiar Linha Digitável' : 'Copiar Dados Bancários'}
+                </button>
+              </div>
             </div>
           </div>
 

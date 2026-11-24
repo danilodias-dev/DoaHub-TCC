@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, ChevronDown, UserCircle2, LogOut, LayoutDashboard, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Logo } from '../ui/Logo';
-import { useAuth } from '../../context/AuthContext';
-import { HIDDEN_NAV_ROUTES } from '../../data/constants';
+import { Logo } from '../components/ui/Logo';
+import { useAuth } from '../contexts/AuthContext';
+import { HIDDEN_NAV_ROUTES } from '../data/constants';
 
 /**
  * Links públicos comuns a todos os estados (guest e logado).

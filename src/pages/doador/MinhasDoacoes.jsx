@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion';
-import { Search, Download, Filter, Heart, ExternalLink, Calendar, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Search, Download, Filter, Heart, ExternalLink, Calendar, ChevronRight, CheckCircle2, Upload, FileText } from 'lucide-react';
 import { useState } from 'react';
-import { MOCK_DONATIONS } from '../../data/mockData';
 import { motionTokens } from '../../utils/motion';
+import { useDonor } from '../../contexts/DonorContext';
 
 export function MinhasDoacoes() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [uploadingId, setUploadingId] = useState(null);
+  const { destinacoes, donations, totalDestinado, uploadComprovante, baixarComprovante, loading } = useDonor();
 
   const pageVariants = {
     initial: { opacity: 0, x: -10 },
@@ -73,37 +75,73 @@ export function MinhasDoacoes() {
           </div>
 
           <div className="flex flex-col">
-            {MOCK_DONATIONS.filter(d => d.ong.toLowerCase().includes(searchTerm.toLowerCase())).map((donation) => (
-              <div key={donation.id} className="grid grid-cols-1 md:grid-cols-5 gap-4 p-6 md:px-8 md:py-6 border-b border-graphite/5 last:border-0 hover:bg-ice/20 transition-colors items-center group">
-                <div className="col-span-2 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-ice flex items-center justify-center text-emerald">
-                     <Heart className="w-6 h-6 fill-current" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-graphite-dark group-hover:text-emerald transition-colors">{donation.ong}</span>
-                    <span className="text-xs text-graphite-light font-medium">Rurópolis, PA</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-2 text-sm font-medium text-graphite-light md:text-graphite">
-                  <Calendar className="w-4 h-4 md:hidden" />
-                  {donation.date}
-                </div>
-                
-                <div className="text-lg font-display font-bold text-graphite-dark">
-                  R$ {donation.amount.toFixed(2)}
-                </div>
-
-                <div className="flex justify-end gap-2">
-                   <button className="flex items-center gap-2 px-4 py-2 bg-ice rounded-xl text-xs font-bold text-graphite-light hover:bg-emerald hover:text-white transition-all">
-                      <Download className="w-4 h-4" /> <span className="hidden lg:inline">Recibo</span>
-                   </button>
-                   <button className="p-2.5 bg-ice rounded-xl text-graphite-light hover:text-emerald transition-all">
-                      <ExternalLink className="w-4 h-4" />
-                   </button>
-                </div>
+            {destinacoes.length === 0 ? (
+              <div className="p-12 text-center text-graphite-light font-medium">
+                Nenhuma destinação fiscal registrada ainda. Utilize nosso Simulador para gerar sua primeira guia DARF!
               </div>
-            ))}
+            ) : (
+              destinacoes
+                .filter(d => (d.ongs?.nome || d.fundo_governamental || '').toLowerCase().includes(searchTerm.toLowerCase()))
+                .map((d) => (
+                  <div key={d.id} className="grid grid-cols-1 md:grid-cols-5 gap-4 p-6 md:px-8 md:py-6 border-b border-graphite/5 last:border-0 hover:bg-ice/20 transition-colors items-center group">
+                    <div className="col-span-2 flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-ice flex items-center justify-center text-emerald">
+                        <Heart className="w-6 h-6 fill-current" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-graphite-dark group-hover:text-emerald transition-colors">
+                          {d.ongs?.nome || d.fundo_governamental}
+                        </span>
+                        <span className="text-xs text-graphite-light font-medium">
+                          DARF {d.codigo_darf || '3351'} • Status: <span className="font-bold text-emerald">{d.status}</span>
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 text-sm font-medium text-graphite-light md:text-graphite">
+                      <Calendar className="w-4 h-4 md:hidden" />
+                      {d.data_destinacao ? d.data_destinacao.split('T')[0] : 'Hoje'}
+                    </div>
+                    
+                    <div className="text-lg font-display font-bold text-graphite-dark">
+                      R$ {Number(d.valor || 0).toFixed(2)}
+                    </div>
+
+                    <div className="flex justify-end gap-2 items-center">
+                      {d.comprovante_url ? (
+                        <button 
+                          onClick={() => baixarComprovante(d.comprovante_url)}
+                          className="flex items-center gap-2 px-3 py-2 bg-emerald/10 text-emerald rounded-xl text-xs font-bold hover:bg-emerald hover:text-white transition-all"
+                          title="Baixar comprovante seguro"
+                        >
+                          <Download className="w-4 h-4" /> <span className="hidden lg:inline">Comprovante</span>
+                        </button>
+                      ) : (
+                        <label className="flex items-center gap-2 px-3 py-2 bg-ice rounded-xl text-xs font-bold text-graphite-light hover:bg-emerald hover:text-white transition-all cursor-pointer">
+                          <Upload className="w-4 h-4" />
+                          <span className="hidden lg:inline">{uploadingId === d.id ? 'Enviando...' : 'Anexar'}</span>
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept=".pdf,image/*"
+                            disabled={uploadingId === d.id}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              setUploadingId(d.id);
+                              try {
+                                await uploadComprovante(d.id, file);
+                              } finally {
+                                setUploadingId(null);
+                              }
+                            }}
+                          />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                ))
+            )}
           </div>
         </div>
 

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Upload, CheckCircle2, ChevronLeft, Shield, ArrowRight, File, XCircle, AlertTriangle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PremiumButton } from '../../components/ui/PremiumButton';
-import { useCampaigns } from '../../context/CampaignContext';
+import { useCampaigns } from '../../contexts/CampaignContext';
 import { motionTokens } from '../../utils/motion';
 
 const ACCEPTED_TYPES = [
