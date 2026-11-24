@@ -14,7 +14,9 @@ export const storageService = {
       throw new Error('Parâmetros obrigatórios ausentes para o upload do comprovante.');
     }
 
-    const fileExt = file.name.split('.').pop() || 'pdf';
+    const fileExt = (file?.name && typeof file.name === 'string') 
+      ? (file.name.split('.').pop() || 'pdf') 
+      : 'pdf';
     const filePath = `${usuarioId}/${destinacaoId}-${Date.now()}.${fileExt}`;
 
     const { data, error } = await supabase.storage

@@ -88,7 +88,7 @@ function NavItem({ to, label, isActive, mdHidden }) {
 
 // ─── Componente: Dropdown de perfil ─────────────────────────────────────────
 
-function ProfileDropdown({ user, onLogout }) {
+function ProfileDropdown({ user, profile, onLogout }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -103,8 +103,9 @@ function ProfileDropdown({ user, onLogout }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open]);
 
-  // Pega só o primeiro nome para exibição compacta
-  const firstName = user.name.split(' ')[0];
+  // Nome defensivo com fallback
+  const nomeExibicao = profile?.nome || user?.user_metadata?.nome || user?.name || (user?.email ? user.email.split('@')[0] : '') || 'Usuário';
+  const firstName = nomeExibicao ? nomeExibicao.split(' ')[0] : 'Usuário';
 
   return (
     <div ref={ref} className="relative">
@@ -131,7 +132,7 @@ function ProfileDropdown({ user, onLogout }) {
             {/* Cabeçalho do dropdown */}
             <div className="px-4 py-3 border-b border-graphite/5">
               <p className="text-xs font-bold text-graphite-light uppercase tracking-wide">Conta</p>
-              <p className="text-sm font-semibold text-graphite-dark truncate mt-0.5">{user.name}</p>
+              <p className="text-sm font-semibold text-graphite-dark truncate mt-0.5">{nomeExibicao}</p>
             </div>
 
             {/* Opções */}
@@ -179,7 +180,7 @@ export function NavHeader() {
   const [isOpen, setIsOpen] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { user, isLoading, logout } = useAuth();
+  const { user, profile, isLoading, logout } = useAuth();
 
   // Fecha o mobile menu em toda troca de rota
   useEffect(() => { setIsOpen(false); }, [pathname]);
@@ -223,7 +224,7 @@ export function NavHeader() {
             {user ? (
               /* Doador logado: dropdown de perfil */
               <div className="hidden md:flex">
-                <ProfileDropdown user={user} onLogout={handleLogout} />
+                <ProfileDropdown user={user} profile={profile} onLogout={handleLogout} />
               </div>
             ) : (
               /* Guest: botões Entrar + Cadastre-se */
@@ -294,7 +295,9 @@ export function NavHeader() {
                   <UserCircle2 className="w-8 h-8 text-emerald flex-shrink-0" />
                   <div>
                     <p className="text-xs text-graphite-light font-medium">Bem-vindo de volta!</p>
-                    <p className="text-sm font-bold text-graphite-dark">{user.name}</p>
+                    <p className="text-sm font-bold text-graphite-dark">
+                      {profile?.nome || user?.user_metadata?.nome || user?.name || (user?.email ? user.email.split('@')[0] : '') || 'Usuário'}
+                    </p>
                   </div>
                 </div>
               )}

@@ -9,15 +9,32 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Helper para construir perfil fallback seguro caso public.usuarios demore a sincronizar
+  const buildFallbackProfile = (authUser, customData = {}) => {
+    if (!authUser) return null;
+    return {
+      id: authUser.id,
+      email: authUser.email,
+      nome: customData.nome || authUser.user_metadata?.nome || (authUser.email ? authUser.email.split('@')[0] : 'Usuário'),
+      tipo: customData.tipo || authUser.user_metadata?.tipo || 'doador',
+      criado_em: authUser.created_at || new Date().toISOString(),
+    };
+  };
+
   // Carrega a sessão inicial e perfil do Supabase
   const loadInitialSession = useCallback(async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const session = await authService.getSession();
       if (session?.user) {
         setUser(session.user);
-        const userProfile = await authService.getCurrentProfile(session.user.id);
-        setProfile(userProfile);
+        try {
+          const userProfile = await authService.getCurrentProfile(session.user.id);
+          setProfile(userProfile || buildFallbackProfile(session.user));
+        } catch (profileErr) {
+          console.warn('Erro ao carregar perfil na public.usuarios, aplicando fallback:', profileErr);
+          setProfile(buildFallbackProfile(session.user));
+        }
       } else {
         setUser(null);
         setProfile(null);
@@ -38,8 +55,12 @@ export function AuthProvider({ children }) {
     const { data: { subscription } } = authService.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         setUser(session.user);
-        const userProfile = await authService.getCurrentProfile(session.user.id);
-        setProfile(userProfile);
+        try {
+          const userProfile = await authService.getCurrentProfile(session.user.id);
+          setProfile(userProfile || buildFallbackProfile(session.user));
+        } catch {
+          setProfile(buildFallbackProfile(session.user));
+        }
       } else {
         setUser(null);
         setProfile(null);
@@ -61,9 +82,15 @@ export function AuthProvider({ children }) {
       const { user: loggedUser } = await authService.signIn({ email, password });
       setUser(loggedUser);
       if (loggedUser) {
-        const userProfile = await authService.getCurrentProfile(loggedUser.id);
-        setProfile(userProfile);
-        return { user: loggedUser, profile: userProfile };
+        let userProfile = null;
+        try {
+          userProfile = await authService.getCurrentProfile(loggedUser.id);
+        } catch (e) {
+          console.warn('Falha na busca imediata de perfil, usando fallback:', e);
+        }
+        const finalProfile = userProfile || buildFallbackProfile(loggedUser);
+        setProfile(finalProfile);
+        return { user: loggedUser, profile: finalProfile };
       }
     } catch (error) {
       console.error('Erro no login:', error);
@@ -82,8 +109,14 @@ export function AuthProvider({ children }) {
       const data = await authService.signUp({ email, password, nome, tipo });
       if (data?.user) {
         setUser(data.user);
-        const userProfile = await authService.getCurrentProfile(data.user.id);
-        setProfile(userProfile);
+        let userProfile = null;
+        try {
+          userProfile = await authService.getCurrentProfile(data.user.id);
+        } catch {
+          userProfile = null;
+        }
+        const finalProfile = userProfile || buildFallbackProfile(data.user, { nome, tipo });
+        setProfile(finalProfile);
       }
       return data;
     } catch (error) {

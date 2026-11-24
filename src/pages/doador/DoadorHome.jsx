@@ -63,9 +63,12 @@ function ImpactModal({ report, onClose }) {
 }
 
 export function DoadorHome() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { donations, metrics, getImpactReport } = useDonor();
   const [selectedReportId, setSelectedReportId] = useState(null);
+
+  const nomeExibicao = profile?.nome || user?.user_metadata?.nome || user?.name || (user?.email ? user.email.split('@')[0] : '') || 'Doador';
+  const primeiroNome = nomeExibicao ? nomeExibicao.split(' ')[0] : 'Doador';
 
   const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
@@ -96,7 +99,7 @@ export function DoadorHome() {
             Meu <span className="text-emerald">Painel</span>
           </h1>
           <p className="text-graphite-light text-lg">
-            Acompanhe sua destinação fiscal e o impacto das suas doações, {user?.name?.split(' ')[0] || 'Doador'}.
+            Acompanhe sua destinação fiscal e o impacto das suas doações, {primeiroNome}.
           </p>
         </div>
 

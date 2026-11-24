@@ -306,7 +306,7 @@ export const ReportsTab = memo(function ReportsTab() {
                     : 'text-graphite-light hover:text-graphite-dark'
                 }`}
               >
-                {cfg.label.split(' ')[0]}
+                {cfg?.label ? cfg.label.split(' ')[0] : key}
               </button>
             ))}
           </div>

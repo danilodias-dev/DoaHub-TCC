@@ -100,7 +100,9 @@ export function MinhasDoacoes() {
                     
                     <div className="flex items-center gap-2 text-sm font-medium text-graphite-light md:text-graphite">
                       <Calendar className="w-4 h-4 md:hidden" />
-                      {d.data_destinacao ? d.data_destinacao.split('T')[0] : 'Hoje'}
+                      {(typeof d.data_destinacao === 'string' && d.data_destinacao.includes('T'))
+                        ? d.data_destinacao.split('T')[0]
+                        : (d.data_destinacao || 'Hoje')}
                     </div>
                     
                     <div className="text-lg font-display font-bold text-graphite-dark">

@@ -116,7 +116,9 @@ export function DonorProvider({ children }) {
   const legacyDonations = useMemo(() => {
     return destinacoes.map(d => ({
       id: d.id,
-      date: d.data_destinacao ? d.data_destinacao.split('T')[0] : '2026-04-10',
+      date: (typeof d.data_destinacao === 'string' && d.data_destinacao.includes('T')) 
+        ? d.data_destinacao.split('T')[0] 
+        : (d.data_destinacao || '2026-04-10'),
       ngo: d.ongs?.nome || 'Fundo Oficial Selecionado',
       fund: d.fundo_governamental || 'Fundo Municipal (ECA/Idoso)',
       amount: Number(d.valor || 0),

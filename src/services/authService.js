@@ -21,10 +21,12 @@ export const authService = {
    * Envia nome e tipo nos metadados para que a Trigger on_auth_user_created popule public.usuarios
    */
   async signUp({ email, password, nome, tipo = 'doador' }) {
+    const redirectUrl = typeof window !== 'undefined' ? window.location.origin : undefined;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo: redirectUrl,
         data: {
           nome,
           tipo,
